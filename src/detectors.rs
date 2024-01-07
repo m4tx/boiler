@@ -181,7 +181,7 @@ impl GitDetector {
     fn get_commit_time(commit: Result<Info, Error>) -> chrono::DateTime<chrono::Utc> {
         let commit = commit.expect("could not get commit");
         let commit_time = commit.commit_time();
-        
+
         chrono::DateTime::from_timestamp(commit_time, 0).unwrap()
     }
 }
