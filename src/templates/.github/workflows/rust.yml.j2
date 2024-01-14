@@ -23,7 +23,9 @@ jobs:
 {%- endraw %}
         rust: [ {{ boiler.gh_actions_rust_versions | join(sep=", ") }} ]
         os: [ {{ boiler.gh_actions_rust_os | join(sep=", ") }} ]
+{%- if boiler.gh_actions_rust_features %}
         features: {{ boiler.gh_actions_rust_features | to_yaml_array }}
+{%- endif %}
 {%- raw %}
 
     runs-on: ${{ matrix.os }}

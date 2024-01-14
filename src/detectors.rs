@@ -280,7 +280,7 @@ fn default_context_data() -> Value {
     );
     data.insert(
         "gh_actions_rust_features".to_string(),
-        Value::new_array(vec![Value::new_string("default".to_string())]),
+        Value::new_array(vec![]),
     );
 
     data
