@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use once_cell::sync::Lazy;
 use regex::Regex;
-use tera::Tera;
+use tera::{Error, Tera};
 
 use crate::data::{Repo, Value};
 
@@ -23,6 +25,30 @@ macro_rules! template {
     };
 }
 
+pub fn to_yaml_array(
+    value: &tera::Value,
+    _args: &HashMap<String, tera::Value>,
+) -> tera::Result<tera::Value> {
+    let value = value
+        .as_array()
+        .ok_or_else(|| Error::msg("value is not an array"))?;
+
+    let array_str = value
+        .iter()
+        .map(|item| {
+            let item_str = item
+                .as_str()
+                .ok_or_else(|| Error::msg("item is not a string"))?;
+            let item_quoted = format!("\"{}\"", item_str.replace('\"', "\\\""));
+            Ok::<String, tera::Error>(item_quoted)
+        })
+        .collect::<Result<Vec<String>, _>>()
+        .expect("item is not a string")
+        .join(", ");
+
+    Ok(tera::Value::String("[ ".to_string() + &array_str + " ]"))
+}
+
 static TERA: Lazy<Tera> = Lazy::new(|| {
     let mut tera = Tera::default();
     tera.add_raw_templates(vec![
@@ -34,7 +60,7 @@ static TERA: Lazy<Tera> = Lazy::new(|| {
         template!("README.header.md.j2"),
     ])
     .expect("could not add raw templates");
-    tera.autoescape_on(vec![]);
+    tera.register_filter("to_yaml_array", to_yaml_array);
     tera
 });
 
@@ -118,7 +144,7 @@ fn render_template(file_name: &str, data: &ActionData) {
     let template_name = format!("{}.j2", file_name);
     let output = TERA
         .render(&template_name, &data.context.clone().into())
-        .unwrap_or_else(|_| panic!("could not render {}", template_name));
+        .unwrap_or_else(|e| panic!("could not render {}: {:?}", template_name, e));
 
     std::fs::create_dir_all(data.repo.path().join(file_name).parent().unwrap())
         .expect("could not create directory");

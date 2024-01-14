@@ -2,6 +2,7 @@ name: Rust CI
 
 on:
   push:
+  pull_request:
   schedule:
     - cron: '0 0 * * *'
 
@@ -18,8 +19,9 @@ jobs:
   build:
     strategy:
       matrix:
-        rust: [ "stable", "nightly" ]
-        os: [ ubuntu-latest, macos-latest, windows-2019 ]
+        rust: [ stable, nightly ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        features: [ "default" ]
 
     runs-on: ${{ matrix.os }}
     steps:

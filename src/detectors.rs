@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use chrono::Datelike;
 use gix::revision::walk::Info;
@@ -27,7 +27,7 @@ struct RustDetector;
 
 impl Detector for RustDetector {
     fn detect(&self, repo: &Repo) -> Value {
-        let mut data = Value::new_object(HashMap::new());
+        let mut data = Value::new_object(BTreeMap::new());
 
         let cargo_toml = repo.path().join("Cargo.toml");
         if cargo_toml.exists() {
@@ -67,11 +67,51 @@ impl Detector for RustDetector {
     }
 }
 
+struct PythonDetector;
+
+impl Detector for PythonDetector {
+    fn detect(&self, repo: &Repo) -> Value {
+        let mut data = Value::new_object(BTreeMap::new());
+
+        let pyproject_toml = repo.path().join("pyproject.toml");
+        let requirements_txt = repo.path().join("requirements.txt");
+        if pyproject_toml.exists() {
+            data.insert(
+                "python_package_manager".to_string(),
+                Value::new_string("poetry".to_string()),
+            );
+            data.insert(
+                "langs".to_string(),
+                Value::new_array(vec![Value::new_string("python".to_string())]),
+            );
+        } else if requirements_txt.exists() {
+            data.insert(
+                "python_package_manager".to_string(),
+                Value::new_string("pip".to_string()),
+            );
+            data.insert(
+                "langs".to_string(),
+                Value::new_array(vec![Value::new_string("python".to_string())]),
+            );
+        }
+
+        let manage_py = repo.path().join("manage.py");
+        if manage_py.exists() {
+            data.insert(
+                "frameworks".to_string(),
+                Value::new_array(vec![Value::new_string("django".to_string())]),
+            );
+        }
+
+        data
+    }
+}
+
 struct DockerDetector;
 
 impl Detector for DockerDetector {
     fn detect(&self, repo: &Repo) -> Value {
-        let mut data = Value::new_object(HashMap::new());
+        let mut data = Value::new_object(BTreeMap::new());
 
         let dockerfile = repo.path().join("Dockerfile");
         if dockerfile.exists() {
@@ -89,7 +129,7 @@ struct LicenseDetector;
 
 impl Detector for LicenseDetector {
     fn detect(&self, repo: &Repo) -> Value {
-        let mut data = Value::new_object(HashMap::new());
+        let mut data = Value::new_object(BTreeMap::new());
 
         let license = repo.path().join("LICENSE");
         if license.exists() {
@@ -116,7 +156,7 @@ struct GitDetector;
 
 impl Detector for GitDetector {
     fn detect(&self, repo: &Repo) -> Value {
-        let mut data = Value::new_object(HashMap::new());
+        let mut data = Value::new_object(BTreeMap::new());
 
         let git_dir = repo.path().join(".git");
         if git_dir.exists() {
@@ -190,7 +230,7 @@ struct ReadmeDetector;
 
 impl Detector for ReadmeDetector {
     fn detect(&self, repo: &Repo) -> Value {
-        let mut data = Value::new_object(HashMap::new());
+        let mut data = Value::new_object(BTreeMap::new());
 
         let readme_path = repo.path().join("README.md");
         if readme_path.exists() {
@@ -209,17 +249,51 @@ impl Detector for ReadmeDetector {
 #[allow(non_snake_case)]
 struct DetectorsEnabled {
     RustDetector: bool,
+    PythonDetector: bool,
     DockerDetector: bool,
     LicenseDetector: bool,
     GitDetector: bool,
     ReadmeDetector: bool,
 }
 
+fn default_context_data() -> Value {
+    let mut data = Value::new_object(BTreeMap::new());
+
+    data.insert(
+        "license".to_string(),
+        Value::new_string("LicenseRef-proprietary".to_string()),
+    );
+    data.insert(
+        "gh_actions_rust_versions".to_string(),
+        Value::new_array(vec![
+            Value::new_string("stable".to_string()),
+            Value::new_string("nightly".to_string()),
+        ]),
+    );
+    data.insert(
+        "gh_actions_rust_os".to_string(),
+        Value::new_array(vec![
+            Value::new_string("ubuntu-latest".to_string()),
+            Value::new_string("macos-latest".to_string()),
+            Value::new_string("windows-latest".to_string()),
+        ]),
+    );
+    data.insert(
+        "gh_actions_rust_features".to_string(),
+        Value::new_array(vec![Value::new_string("default".to_string())]),
+    );
+
+    data
+}
+
 fn detect(repo: &Repo, detectors: &DetectorsEnabled) -> Value {
-    let mut data = Value::new_object(HashMap::new());
+    let mut data = default_context_data();
 
     if detectors.RustDetector {
         data.union(&RustDetector.detect(repo));
+    }
+    if detectors.PythonDetector {
+        data.union(&PythonDetector.detect(repo));
     }
     if detectors.DockerDetector {
         data.union(&DockerDetector.detect(repo));
@@ -238,10 +312,11 @@ fn detect(repo: &Repo, detectors: &DetectorsEnabled) -> Value {
 }
 
 pub fn detect_all(repo: &Repo) -> Value {
-    let mut data = Value::new_object(HashMap::new());
+    let mut data = Value::new_object(BTreeMap::new());
 
     let detectors_enabled = DetectorsEnabled {
         RustDetector: true,
+        PythonDetector: true,
         DockerDetector: true,
         LicenseDetector: true,
         GitDetector: true,

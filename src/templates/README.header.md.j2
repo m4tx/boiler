@@ -1,8 +1,15 @@
 {{ boiler.name }}
 {% for letter in boiler.name %}={% endfor %}
 
+{% if 'rust' in boiler.langs -%}
 [![Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Rust%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions)
+{% endif -%}
+{%- if 'python' in boiler.langs -%}
+[![Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Python%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions)
+{% endif -%}
+{%- if boiler.crate_name -%}
 [![crates.io](https://img.shields.io/crates/v/{{ boiler.crate_name }}.svg)](https://crates.io/crates/{{ boiler.crate_name }})
 [![Documentation](https://docs.rs/{{ boiler.crate_name }}/badge.svg)](https://docs.rs/{{ boiler.crate_name }})
+{% endif -%}
 [![{{ boiler.license }} licensed](https://img.shields.io/github/license/{{ boiler.repo_owner }}/{{ boiler.repo_name }})](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{ boiler.repo_owner }}/{{ boiler.repo_name }})

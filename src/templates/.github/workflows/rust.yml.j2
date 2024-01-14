@@ -3,6 +3,7 @@ name: Rust CI
 
 on:
   push:
+  pull_request:
   schedule:
     - cron: '0 0 * * *'
 
@@ -19,8 +20,11 @@ jobs:
   build:
     strategy:
       matrix:
-        rust: [ "stable", "nightly" ]
-        os: [ ubuntu-latest, macos-latest, windows-2019 ]
+{%- endraw %}
+        rust: [ {{ boiler.gh_actions_rust_versions | join(sep=", ") }} ]
+        os: [ {{ boiler.gh_actions_rust_os | join(sep=", ") }} ]
+        features: {{ boiler.gh_actions_rust_features | to_yaml_array }}
+{%- raw %}
 
     runs-on: ${{ matrix.os }}
     steps:

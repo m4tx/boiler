@@ -1,0 +1,2 @@
+m4tx/riichi-hand-rs:
+  gh_actions_rust_features: [ "", "raster-renderer", "raster-renderer,fluffy-stuff-tile-sets", "raster-renderer,martin-persson-tile-sets" ]
