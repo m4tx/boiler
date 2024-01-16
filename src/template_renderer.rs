@@ -54,6 +54,8 @@ pub static TERA: Lazy<Tera> = Lazy::new(|| {
         template!("LICENSE.j2"),
         template!("rustfmt.toml.j2"),
         template!(".github/dependabot.yml.j2"),
+        template!(".github/workflows/docker-publish.yml.j2"),
+        template!(".github/workflows/python.yml.j2"),
         template!(".github/workflows/rust.yml.j2"),
         template!("README.header.md.j2"),
     ])

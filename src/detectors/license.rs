@@ -12,8 +12,7 @@ impl Detector for LicenseDetector {
 
         let license = repo.path().join("LICENSE");
         if license.exists() {
-            let license_text =
-                std::fs::read_to_string(&license).expect("could not read LICENSE.j2");
+            let license_text = std::fs::read_to_string(&license).expect("could not read LICENSE");
 
             if license_text.contains("MIT License") {
                 data.insert(context_keys::LICENSE, "MIT");

@@ -1,5 +1,5 @@
 use std::collections::BTreeMap;
-use std::ops::Index;
+use std::ops::{Index, IndexMut};
 use std::path::PathBuf;
 
 use serde::de::Visitor;
@@ -255,6 +255,15 @@ impl Index<&str> for Value {
     fn index(&self, index: &str) -> &Self::Output {
         match self {
             Self::Object(value) => value.get(index).expect("key not found"),
+            _ => panic!("not an object"),
+        }
+    }
+}
+
+impl IndexMut<&str> for Value {
+    fn index_mut(&mut self, index: &str) -> &mut Self::Output {
+        match self {
+            Self::Object(value) => value.get_mut(index).expect("key not found"),
             _ => panic!("not an object"),
         }
     }

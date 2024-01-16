@@ -1,4 +1,5 @@
 pub const CRATE_NAME: &str = "crate_name";
+pub const DOCKERFILES: &str = "dockerfiles";
 pub const FIRST_ACTIVITY_YEAR: &str = "first_activity_year";
 pub const FRAMEWORKS: &str = "frameworks";
 pub const FULL_NAME: &str = "full_name";
