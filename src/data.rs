@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
 use std::path::PathBuf;
 
+use anyhow::{bail, Context};
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -157,11 +158,17 @@ impl Value {
         }
     }
 
-    pub fn union(&mut self, other: &Self) {
+    pub fn union(&mut self, other: &Self) -> anyhow::Result<()> {
         match (self, other) {
             (Self::Object(a), Self::Object(b)) => {
                 for (key, value) in b {
-                    a.insert(key.clone(), value.clone());
+                    if let Some(self_value) = a.get_mut(key) {
+                        self_value
+                            .union(value)
+                            .with_context(|| format!("at key {:?}", key))?;
+                    } else {
+                        a.insert(key.clone(), value.clone());
+                    }
                 }
             }
             (Self::Array(a), Self::Array(b)) => {
@@ -169,8 +176,15 @@ impl Value {
                     a.push(value.clone());
                 }
             }
-            (a, b) => panic!("incompatible types: {:?} and {:?}", a, b),
+            (Self::String(a), Self::String(b)) => {
+                if a != b {
+                    bail!("incompatible string values: {:?} and {:?}", a, b)
+                }
+            }
+            (a, b) => bail!("incompatible types: {:?} and {:?}", a, b),
         }
+
+        Ok(())
     }
 
     pub fn override_with(&mut self, other: &Self) {

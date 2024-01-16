@@ -34,33 +34,31 @@ struct DetectorsEnabled {
 }
 
 fn detect(repo: &Repo, detectors: &DetectorsEnabled) -> DetectorResult {
-    let mut data = default_context_data();
+    let mut data = Value::new_object(BTreeMap::new());
 
     if detectors.RustDetector {
-        data.union(&RustDetector.detect(repo)?);
+        data.union(&RustDetector.detect(repo)?)?;
     }
     if detectors.PythonDetector {
-        data.union(&PythonDetector.detect(repo)?);
+        data.union(&PythonDetector.detect(repo)?)?;
     }
     if detectors.DockerDetector {
-        data.union(&DockerDetector.detect(repo)?);
+        data.union(&DockerDetector.detect(repo)?)?;
     }
     if detectors.LicenseDetector {
-        data.union(&LicenseDetector.detect(repo)?);
+        data.union(&LicenseDetector.detect(repo)?)?;
     }
     if detectors.GitDetector {
-        data.union(&GitDetector.detect(repo)?);
+        data.union(&GitDetector.detect(repo)?)?;
     }
     if detectors.ReadmeDetector {
-        data.union(&ReadmeDetector.detect(repo)?);
+        data.union(&ReadmeDetector.detect(repo)?)?;
     }
 
     Ok(data)
 }
 
 pub fn detect_all(repo: &Repo) -> DetectorResult {
-    let mut data = Value::new_object(BTreeMap::new());
-
     let detectors_enabled = DetectorsEnabled {
         RustDetector: true,
         PythonDetector: true,
@@ -69,7 +67,10 @@ pub fn detect_all(repo: &Repo) -> DetectorResult {
         GitDetector: true,
         ReadmeDetector: true,
     };
-    data.union(&detect(repo, &detectors_enabled)?);
+    let data = detect(repo, &detectors_enabled)?;
 
-    Ok(data)
+    let mut data_with_defaults = default_context_data();
+    data_with_defaults.override_with(&data);
+
+    Ok(data_with_defaults)
 }

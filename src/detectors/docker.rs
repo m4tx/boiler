@@ -14,7 +14,7 @@ pub enum DockerDetectorError {
 
 pub struct DockerDetector;
 
-fn dockerfile_cmp(a: &String, b: &String) -> std::cmp::Ordering {
+fn dockerfile_cmp(a: &str, b: &str) -> std::cmp::Ordering {
     let a = a.to_lowercase();
     let b = b.to_lowercase();
     if a == "dockerfile" {
@@ -40,12 +40,12 @@ impl Detector for DockerDetector {
 
             let file_name = entry.file_name();
             let file_name_str = file_name.to_string_lossy();
-            if file_name_str == "Dockerfile" || file_name_str.ends_with(".dockerfile") {
+            let file_name_lower = file_name_str.to_lowercase();
+            if file_name_lower == "dockerfile" || file_name_lower.ends_with(".dockerfile") {
                 dockerfiles.push(file_name_str.to_string());
             }
         }
-        dockerfiles.sort_by(dockerfile_cmp);
-        println!("dockerfiles: {:?}", dockerfiles);
+        dockerfiles.sort_by(|a, b| dockerfile_cmp(a, b));
 
         let mut data = Value::new_object(BTreeMap::new());
         if !dockerfiles.is_empty() {
@@ -55,7 +55,7 @@ impl Detector for DockerDetector {
                 Value::new_array(
                     dockerfiles
                         .iter()
-                        .map(|s| Value::new_string(s))
+                        .map(Value::new_string)
                         .collect::<Vec<Value>>(),
                 ),
             );

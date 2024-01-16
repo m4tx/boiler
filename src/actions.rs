@@ -1,5 +1,4 @@
 use dependabot_config::DependabotConfigAction;
-use license::LicenseAction;
 use pre_commit_config::PreCommitConfigAction;
 use readme::ReadmeAction;
 use rust_ci::RustCiAction;
@@ -32,7 +31,7 @@ pub trait Action {
 
 pub fn run_all_actions(action_data: &ActionData) -> ActionResult {
     PreCommitConfigAction.run(action_data)?;
-    LicenseAction.run(action_data)?;
+    // LicenseAction.run(action_data)?;
     RustfmtTomlAction.run(action_data)?;
     DependabotConfigAction.run(action_data)?;
     RustCiAction.run(action_data)?;

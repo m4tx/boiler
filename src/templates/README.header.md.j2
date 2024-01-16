@@ -2,10 +2,13 @@
 {% for letter in boiler.name %}={% endfor %}
 
 {% if 'rust' in boiler.langs -%}
-[![Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Rust%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions)
+[![Rust Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Rust%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/rust.yml)
 {% endif -%}
 {%- if 'python' in boiler.langs -%}
-[![Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Python%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions)
+[![Python Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Python%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/python.yml)
+{% endif -%}
+{%- if 'docker' in boiler.langs -%}
+[![Docker Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Docker/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/docker-publish.yml)
 {% endif -%}
 {%- if boiler.crate_name -%}
 [![crates.io](https://img.shields.io/crates/v/{{ boiler.crate_name }}.svg)](https://crates.io/crates/{{ boiler.crate_name }})
