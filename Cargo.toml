@@ -22,5 +22,7 @@ serde = { version = "1.0.195", features = ["derive"] }
 serde_yaml = "0.9.30"
 tera = "1.19.1"
 toml = "0.8.8"
+thiserror = "1.0.56"
+anyhow = "1.0.79"
 
 [dev-dependencies]

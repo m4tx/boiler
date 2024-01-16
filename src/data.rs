@@ -148,10 +148,10 @@ impl Value {
         }
     }
 
-    pub fn insert(&mut self, key: String, value: Value) {
+    pub fn insert<T: Into<String>, U: Into<Value>>(&mut self, key: T, value: U) {
         match self {
             Self::Object(map) => {
-                map.insert(key, value);
+                map.insert(key.into(), value.into());
             }
             _ => panic!("not an object"),
         }
@@ -192,6 +192,60 @@ impl Value {
 impl Default for Value {
     fn default() -> Self {
         Self::new_null()
+    }
+}
+
+impl From<bool> for Value {
+    fn from(value: bool) -> Self {
+        Self::new_bool(value)
+    }
+}
+
+impl From<i32> for Value {
+    fn from(value: i32) -> Self {
+        Self::new_number(Number::new_integer(value as i64))
+    }
+}
+
+impl From<i64> for Value {
+    fn from(value: i64) -> Self {
+        Self::new_number(Number::new_integer(value))
+    }
+}
+
+impl From<f64> for Value {
+    fn from(value: f64) -> Self {
+        Self::new_number(Number::new_float(value))
+    }
+}
+
+impl From<String> for Value {
+    fn from(value: String) -> Self {
+        Self::new_string(value)
+    }
+}
+
+impl From<&String> for Value {
+    fn from(value: &String) -> Self {
+        Self::new_string(value)
+    }
+}
+
+impl From<&str> for Value {
+    fn from(value: &str) -> Self {
+        Self::new_string(value)
+    }
+}
+
+impl From<Vec<Value>> for Value {
+    fn from(value: Vec<Value>) -> Self {
+        Self::new_array(value)
+    }
+}
+
+impl From<BTreeMap<String, Value>> for Value {
+    fn from(value: BTreeMap<String, Value>) -> Self {
+        Self::new_object(value)
     }
 }
 

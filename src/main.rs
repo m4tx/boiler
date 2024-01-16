@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use actions::ActionData;
+use anyhow::Context;
 use clap::{Parser, Subcommand};
 use data::{Repo, Value};
 
@@ -9,11 +10,14 @@ use crate::context::ContextOverrides;
 
 mod actions;
 mod context;
+mod context_keys;
 mod data;
 mod detectors;
+mod template_renderer;
 
-fn run_in_repo(repo: &Repo) {
-    let mut data = detectors::detect_all(repo);
+fn run_in_repo(repo: &Repo) -> anyhow::Result<()> {
+    let mut data = detectors::detect_all(repo)
+        .with_context(|| format!("could not build context for {}", repo.path().display()))?;
     let repo_string = data["repo_owner"].as_string().unwrap().to_owned()
         + "/"
         + data["repo_name"].as_string().unwrap();
@@ -35,7 +39,10 @@ fn run_in_repo(repo: &Repo) {
         repo: repo.clone(),
         context,
     };
-    actions::run_all_actions(&action_data);
+    actions::run_all_actions(&action_data)
+        .with_context(|| format!("could not run actions for {}", repo.path().display()))?;
+
+    Ok(())
 }
 
 #[derive(Parser, Debug)]
@@ -54,12 +61,14 @@ enum Commands {
     },
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Update { repo } => {
-            run_in_repo(&Repo::new(repo.clone()));
+            run_in_repo(&Repo::new(repo.clone()))?;
         }
     }
+
+    Ok(())
 }

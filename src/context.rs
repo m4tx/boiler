@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use crate::data::Value;
 
@@ -18,4 +18,25 @@ impl ContextOverrides {
     pub fn get(&self, key: &str) -> Option<&Value> {
         self.overrides.get(key)
     }
+}
+
+pub fn default_context_data() -> Value {
+    let mut data = Value::new_object(BTreeMap::new());
+
+    data.insert(crate::context_keys::LICENSE, "LicenseRef-proprietary");
+    data.insert(
+        crate::context_keys::GH_ACTIONS_RUST_VERSIONS,
+        vec![Value::new_string("stable"), Value::new_string("nightly")],
+    );
+    data.insert(
+        crate::context_keys::GH_ACTIONS_RUST_OS,
+        vec![
+            Value::new_string("ubuntu-latest"),
+            Value::new_string("macos-latest"),
+            Value::new_string("windows-latest"),
+        ],
+    );
+    data.insert(crate::context_keys::GH_ACTIONS_RUST_FEATURES, vec![]);
+
+    data
 }
