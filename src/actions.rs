@@ -5,6 +5,7 @@ use rust_ci::RustCiAction;
 use rustfmt_toml::RustfmtTomlAction;
 
 use crate::actions::docker::DockerCiAction;
+use crate::actions::license::LicenseAction;
 use crate::actions::python::PythonCiAction;
 use crate::data::{Repo, Value};
 
@@ -31,7 +32,7 @@ pub trait Action {
 
 pub fn run_all_actions(action_data: &ActionData) -> ActionResult {
     PreCommitConfigAction.run(action_data)?;
-    // LicenseAction.run(action_data)?;
+    LicenseAction.run(action_data)?;
     RustfmtTomlAction.run(action_data)?;
     DependabotConfigAction.run(action_data)?;
     RustCiAction.run(action_data)?;

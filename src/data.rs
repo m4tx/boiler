@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context};
 use serde::de::Visitor;
@@ -18,7 +18,7 @@ impl Repo {
     }
 
     #[must_use]
-    pub fn path(&self) -> &PathBuf {
+    pub fn path(&self) -> &Path {
         &self.path
     }
 }
@@ -200,6 +200,10 @@ impl Value {
             }
             (a, b) => *a = b.clone(),
         }
+    }
+
+    pub fn as_yaml(&self) -> String {
+        serde_yaml::to_string(self).expect("could not serialize value to yaml")
     }
 }
 

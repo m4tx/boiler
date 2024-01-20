@@ -4,6 +4,7 @@ use once_cell::sync::Lazy;
 use tera::Tera;
 
 use crate::actions::ActionData;
+use crate::actions_utils::{write_file, ActionIoError};
 
 macro_rules! template {
     ($template_name:literal) => {
@@ -16,11 +17,11 @@ macro_rules! template {
 
 #[derive(Debug, thiserror::Error)]
 pub enum TemplateRendererError {
-    #[error("could not render template")]
+    #[error("Could not render template")]
     Rendering(#[from] tera::Error),
 
-    #[error("could not write file")]
-    Io(#[from] std::io::Error),
+    #[error("Could not write rendered template")]
+    Io(#[from] ActionIoError),
 }
 
 pub fn to_yaml_array(
@@ -70,9 +71,7 @@ pub fn render_template(file_name: &str, data: &ActionData) -> Result<(), Templat
         .render(&template_name, &data.context.clone().into())
         .map_err(TemplateRendererError::Rendering)?;
 
-    std::fs::create_dir_all(data.repo.path().join(file_name).parent().unwrap())
-        .map_err(TemplateRendererError::Io)?;
-    std::fs::write(data.repo.path().join(file_name), output).map_err(TemplateRendererError::Io)?;
+    write_file(&data.repo, file_name, &output).map_err(TemplateRendererError::Io)?;
 
     Ok(())
 }

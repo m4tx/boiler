@@ -10,7 +10,7 @@ impl Action for DockerCiAction {
     fn run(&self, data: &ActionData) -> ActionResult {
         if data.context["boiler"][context_keys::LANGS]
             .as_array()
-            .expect("no langs detected")
+            .expect("No langs detected")
             .contains(&Value::new_string("docker"))
         {
             template_renderer::render_template(DOCKER_CI_FILENAME, data)?;

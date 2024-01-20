@@ -5,42 +5,46 @@ use actions::ActionData;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use data::{Repo, Value};
+use env_logger::Env;
+use log::info;
 
 use crate::context::ContextOverrides;
 
 mod actions;
+mod actions_utils;
 mod context;
 mod context_keys;
 mod data;
 mod detectors;
 mod template_renderer;
 
-fn run_in_repo(repo: &Repo) -> anyhow::Result<()> {
-    let mut data = detectors::detect_all(repo)
-        .with_context(|| format!("could not build context for {}", repo.path().display()))?;
+fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
+    let repo_path = repo.path().to_owned();
+
+    let mut data = detectors::detect_all(&repo)
+        .with_context(|| format!("Could not build context for {}", repo_path.display()))?;
     let repo_string = data["repo_owner"].as_string().unwrap().to_owned()
         + "/"
         + data["repo_name"].as_string().unwrap();
-    println!("Context: {:?}", data);
+    info!("Detected context:\n{}", data.as_yaml());
 
     let context_overrides = ContextOverrides::from_yaml_string(include_str!("overrides.yml"));
     if let Some(repo_override) = context_overrides.get(&repo_string) {
-        println!(
-            "Overriding context for {} with {:?}",
-            repo_string, repo_override
+        info!(
+            "Overriding context for {} with:\n{}",
+            repo_string,
+            repo_override.as_yaml()
         );
         data.override_with(repo_override);
+
+        info!("New context:\n{}", data.as_yaml());
     }
 
-    println!("Context: {:?}", data);
     let context = Value::new_object(BTreeMap::from([("boiler".to_string(), data)]));
 
-    let action_data = ActionData {
-        repo: repo.clone(),
-        context,
-    };
+    let action_data = ActionData { repo, context };
     actions::run_all_actions(&action_data)
-        .with_context(|| format!("could not run actions for {}", repo.path().display()))?;
+        .with_context(|| format!("Could not run actions for {}", repo_path.display()))?;
 
     Ok(())
 }
@@ -62,11 +66,13 @@ enum Commands {
 }
 
 fn main() -> anyhow::Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("boiler=info")).init();
+
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Update { repo } => {
-            run_in_repo(&Repo::new(repo.clone()))?;
+            run_in_repo(Repo::new(repo.clone()))?;
         }
     }
 

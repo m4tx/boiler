@@ -1,6 +1,7 @@
 use regex::Regex;
 
 use crate::actions::{Action, ActionData, ActionResult};
+use crate::actions_utils::write_file;
 use crate::template_renderer::TERA;
 
 pub struct ReadmeAction;
@@ -24,8 +25,7 @@ impl Action for ReadmeAction {
             .unwrap_or_else(|_| panic!("could not render {}", README_HEADER_TEMPLATE));
         readme = format!("{}\n{}", output, readme);
 
-        std::fs::write(data.repo.path().join(README_FILENAME), readme)
-            .unwrap_or_else(|_| panic!("could not write {}", README_FILENAME));
+        write_file(&data.repo, README_FILENAME, &readme)?;
 
         Ok(())
     }
