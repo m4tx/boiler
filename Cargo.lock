@@ -183,16 +183,24 @@ version = "0.1.0"
 dependencies = [
  "anstream",
  "anyhow",
- "boiler_macros",
- "chrono",
+ "boiler_core",
  "clap",
  "clap-verbosity-flag",
- "comrak",
  "env_logger",
+ "log",
+]
+
+[[package]]
+name = "boiler_core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "boiler_macros",
+ "chrono",
+ "comrak",
  "gix",
  "ignore",
  "log",
- "markdown",
  "once_cell",
  "regex",
  "serde",
@@ -206,7 +214,7 @@ dependencies = [
 name = "boiler_macros"
 version = "0.1.0"
 dependencies = [
- "boiler",
+ "boiler_core",
  "proc-macro-crate",
  "proc-macro2",
  "proc-macro2-diagnostics",
@@ -1785,15 +1793,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 
 [[package]]
-name = "markdown"
-version = "1.0.0-alpha.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b0f0025e8c0d89b84d6dc63e859475e40e8e82ab1a08be0a93ad5731513a508"
-dependencies = [
- "unicode-id",
-]
-
-[[package]]
 name = "memchr"
 version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2640,12 +2639,6 @@ name = "unicode-bom"
 version = "2.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7eec5d1121208364f6793f7d2e222bf75a915c19557537745b195b253dd64217"
-
-[[package]]
-name = "unicode-id"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1b6def86329695390197b82c1e244a54a131ceb66c996f2088a3876e2ae083f"
 
 [[package]]
 name = "unicode-ident"

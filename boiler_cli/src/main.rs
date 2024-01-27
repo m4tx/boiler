@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use anyhow::Context;
-use boiler::actions::ActionData;
-use boiler::context::ContextOverrides;
-use boiler::data::{Repo, Value};
+use boiler_core::actions::ActionData;
+use boiler_core::context::ContextOverrides;
+use boiler_core::data::{Repo, Value};
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::InfoLevel;
 use log::info;
@@ -12,7 +12,7 @@ use log::info;
 fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
     let repo_path = repo.path().to_owned();
 
-    let mut data = boiler::detectors::detect_all(&repo)
+    let mut data = boiler_core::detectors::detect_all(&repo)
         .with_context(|| format!("Could not build context for {}", repo_path.display()))?;
     let repo_string = data["repo_owner"].as_string().unwrap().to_owned()
         + "/"
@@ -34,7 +34,7 @@ fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
     let context = Value::new_object(BTreeMap::from([("boiler".to_string(), data)]));
 
     let action_data = ActionData { repo, context };
-    boiler::actions::run_all_actions(&action_data)
+    boiler_core::actions::run_all_actions(&action_data)
         .with_context(|| format!("Could not run actions for {}", repo_path.display()))?;
 
     Ok(())
@@ -57,6 +57,8 @@ enum Commands {
         #[clap(long, short, default_value = ".")]
         repo: PathBuf,
     },
+    ListDetectors,
+    ListActions,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -67,6 +69,8 @@ fn main() -> anyhow::Result<()> {
         .init();
 
     match &cli.command {
+        Commands::ListDetectors => {}
+        Commands::ListActions => {}
         Commands::Update { repo } => {
             run_in_repo(Repo::new(repo.clone()))?;
         }

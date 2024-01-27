@@ -1,4 +1,4 @@
-use boiler::actions::FunctionMeta;
+use boiler_core::function_meta::FunctionMeta;
 use boiler_macros::FunctionMeta;
 
 /// Generates GitHub Actions config for Rust projects

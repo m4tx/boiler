@@ -1,0 +1,20 @@
+[package]
+name = "boiler"
+version = "0.1.0"
+description = "TODO"
+authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
+readme = "../README.md"
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anstream = "0.6.11"
+anyhow = "1.0.79"
+boiler_core = { path = "../boiler_core" }
+clap = { version = "4.4.17", features = ["derive"] }
+clap-verbosity-flag = "2.1.2"
+env_logger = "0.11.0"
+log.workspace = true

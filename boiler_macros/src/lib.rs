@@ -22,7 +22,7 @@ pub fn derive_function_meta(input: proc_macro::TokenStream) -> proc_macro::Token
 
     let docs = get_comment(&input.attrs);
 
-    let boiler = crate_name("boiler").expect("boiler is not present in `Cargo.toml`");
+    let boiler = crate_name("boiler_core").expect("boiler_core is not present in `Cargo.toml`");
     let crate_ident = match boiler {
         FoundCrate::Itself => {
             quote! { crate }

@@ -1,4 +1,4 @@
-error: FunctionMeta can only be derived for types ending with 'Action'
+error: FunctionMeta can only be derived for types ending with 'Action' or 'Detector'
  --> tests/ui/action_meta_fail.rs:5:8
   |
 5 | struct RustCiFailure;
