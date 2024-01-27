@@ -1,33 +1,38 @@
+use boiler_macros::FunctionMeta;
+
 use crate::data::Repo;
 use crate::detectors::{Detector, DetectorResult};
-use crate::detectors_utils::detect_by_extension;
+use crate::detectors_utils::detect_by_header;
 
+#[derive(Debug, FunctionMeta)]
 pub struct ShellScriptDetector;
 
 impl Detector for ShellScriptDetector {
     fn detect(&self, repo: &Repo) -> DetectorResult {
-        detect_by_extension(repo, &["sh"], "shell")
+        detect_by_header(repo, &SHELLSCRIPT_SHEBANGS, "shell")
     }
 }
 
-// value = b"#!/usr/local/bin/bash"
-// value = b"#!/usr/local/bin/fish"
-// value = b"#!/usr/local/bin/tcsh"
-// value = b"#!/usr/local/bin/ash"
-// value = b"#!/usr/local/bin/zsh"
-// value = b"#!/usr/bin/env bash"
-// value = b"#!/usr/bin/env fish"
-// value = b"#!/usr/bin/env zsh"
-// value = b"#!/usr/local/bash"
-// value = b"#!/usr/local/tcsh"
-// value = b"#!/usr/bin/bash"
-// value = b"#!/usr/bin/fish"
-// value = b"#!/usr/bin/tcsh"
-// value = b"#!/usr/bin/zsh"
-// value = b"#!/bin/bash"
-// value = b"#!/bin/tcsh"
-// value = b"#!/bin/ash"
-// value = b"#!/bin/csh"
-// value = b"#!/bin/ksh"
-// value = b"#!/bin/zsh"
-// value = b"#!/bin/sh"
+const SHELLSCRIPT_SHEBANGS: [&[u8]; 21] = [
+    b"#!/usr/local/bin/bash",
+    b"#!/usr/local/bin/fish",
+    b"#!/usr/local/bin/tcsh",
+    b"#!/usr/local/bin/ash",
+    b"#!/usr/local/bin/zsh",
+    b"#!/usr/bin/env bash",
+    b"#!/usr/bin/env fish",
+    b"#!/usr/bin/env zsh",
+    b"#!/usr/local/bash",
+    b"#!/usr/local/tcsh",
+    b"#!/usr/bin/bash",
+    b"#!/usr/bin/fish",
+    b"#!/usr/bin/tcsh",
+    b"#!/usr/bin/zsh",
+    b"#!/bin/bash",
+    b"#!/bin/tcsh",
+    b"#!/bin/ash",
+    b"#!/bin/csh",
+    b"#!/bin/ksh",
+    b"#!/bin/zsh",
+    b"#!/bin/sh",
+];

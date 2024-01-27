@@ -6,7 +6,7 @@ use boiler::actions::ActionData;
 use boiler::context::ContextOverrides;
 use boiler::data::{Repo, Value};
 use clap::{Parser, Subcommand};
-use env_logger::Env;
+use clap_verbosity_flag::InfoLevel;
 use log::info;
 
 fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
@@ -46,6 +46,9 @@ fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
 struct Cli {
     #[command(subcommand)]
     command: Commands,
+
+    #[command(flatten)]
+    verbose: clap_verbosity_flag::Verbosity<InfoLevel>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -57,9 +60,11 @@ enum Commands {
 }
 
 fn main() -> anyhow::Result<()> {
-    env_logger::Builder::from_env(Env::default().default_filter_or("boiler=info")).init();
-
     let cli = Cli::parse();
+
+    env_logger::Builder::new()
+        .filter_module("boiler", cli.verbose.log_level_filter())
+        .init();
 
     match &cli.command {
         Commands::Update { repo } => {

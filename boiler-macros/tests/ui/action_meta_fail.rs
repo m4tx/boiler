@@ -1,7 +1,7 @@
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 
 /// Generates GitHub Actions config for Rust projects
-#[derive(ActionMeta)]
+#[derive(FunctionMeta)]
 struct RustCiFailure;
 
 fn main() {}

@@ -1,9 +1,9 @@
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::template_renderer;
 
-#[derive(Debug, ActionMeta)]
+#[derive(Debug, FunctionMeta)]
 pub struct PreCommitCiAction;
 
 const PRE_COMMIT_CI_FILENAME: &str = ".github/workflows/pre-commit.yml";

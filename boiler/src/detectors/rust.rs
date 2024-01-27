@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use boiler_macros::FunctionMeta;
 use serde::Deserialize;
 
 use crate::context_keys;
@@ -17,6 +18,7 @@ struct CargoPackage {
     authors: Option<Vec<String>>,
 }
 
+#[derive(Debug, FunctionMeta)]
 pub struct RustDetector;
 
 impl Detector for RustDetector {

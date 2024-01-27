@@ -1,9 +1,9 @@
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::{context_keys, template_renderer};
 
-#[derive(Debug, ActionMeta)]
+#[derive(Debug, FunctionMeta)]
 pub struct LicenseAction;
 
 const LICENSE_FILENAME: &str = "LICENSE";

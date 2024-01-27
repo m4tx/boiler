@@ -1,9 +1,9 @@
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::template_renderer;
 
-#[derive(Debug, ActionMeta)]
+#[derive(Debug, FunctionMeta)]
 pub struct PreCommitConfigAction;
 
 const PRE_COMMIT_CONFIG_FILENAME: &str = ".pre-commit-config.yaml";

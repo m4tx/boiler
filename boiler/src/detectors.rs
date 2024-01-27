@@ -1,8 +1,11 @@
 use std::collections::BTreeMap;
 
+use anyhow::Context;
 use docker::DockerDetector;
 use git::GitDetector;
 use license::LicenseDetector;
+use log::debug;
+use once_cell::sync::Lazy;
 use python::PythonDetector;
 use readme::ReadmeDetector;
 use rust::RustDetector;
@@ -13,6 +16,7 @@ use crate::detectors::json::JsonDetector;
 use crate::detectors::shell_script::ShellScriptDetector;
 use crate::detectors::toml::TomlDetector;
 use crate::detectors::yaml::YamlDetector;
+use crate::function_meta::{FunctionEnabled, FunctionMeta};
 
 mod docker;
 mod git;
@@ -27,78 +31,59 @@ mod yaml;
 
 pub(crate) type DetectorResult = anyhow::Result<Value>;
 
-trait Detector {
+pub trait Detector: FunctionMeta + Send + Sync {
     fn detect(&self, repo: &Repo) -> DetectorResult;
 }
 
-#[allow(non_snake_case)]
-struct DetectorsEnabled {
-    JsonDetector: bool,
-    TomlDetector: bool,
-    YamlDetector: bool,
-    ShellScriptDetector: bool,
-    RustDetector: bool,
-    PythonDetector: bool,
-    DockerDetector: bool,
-    LicenseDetector: bool,
-    GitDetector: bool,
-    ReadmeDetector: bool,
-}
+pub static DETECTORS: Lazy<[&dyn Detector; 10]> = Lazy::new(|| {
+    [
+        &DockerDetector,
+        &GitDetector,
+        &JsonDetector,
+        &LicenseDetector,
+        &PythonDetector,
+        &ReadmeDetector,
+        &RustDetector,
+        &ShellScriptDetector,
+        &TomlDetector,
+        &YamlDetector,
+    ]
+});
 
-fn detect(repo: &Repo, detectors: &DetectorsEnabled) -> DetectorResult {
+fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
     let mut data = Value::new_object(BTreeMap::new());
 
-    if detectors.JsonDetector {
-        data.union(&JsonDetector.detect(repo)?)?;
-    }
-    if detectors.TomlDetector {
-        data.union(&TomlDetector.detect(repo)?)?;
-    }
-    if detectors.YamlDetector {
-        data.union(&YamlDetector.detect(repo)?)?;
-    }
-    if detectors.ShellScriptDetector {
-        data.union(&ShellScriptDetector.detect(repo)?)?;
-    }
-    if detectors.RustDetector {
-        data.union(&RustDetector.detect(repo)?)?;
-    }
-    if detectors.PythonDetector {
-        data.union(&PythonDetector.detect(repo)?)?;
-    }
-    if detectors.DockerDetector {
-        data.union(&DockerDetector.detect(repo)?)?;
-    }
-    if detectors.LicenseDetector {
-        data.union(&LicenseDetector.detect(repo)?)?;
-    }
-    if detectors.GitDetector {
-        data.union(&GitDetector.detect(repo)?)?;
-    }
-    if detectors.ReadmeDetector {
-        data.union(&ReadmeDetector.detect(repo)?)?;
+    for detector in *DETECTORS {
+        if detectors_enabled.is_enabled(detector.name()) {
+            let detector_result = detector
+                .detect(repo)
+                .with_context(|| format!("Failed to run detector: {}", detector.name()))?;
+            data.union(&detector_result).with_context(|| {
+                format!("Failed to combine detector result: {}", detector.name())
+            })?;
+        }
     }
 
     Ok(data)
 }
 
 pub fn detect_all(repo: &Repo) -> DetectorResult {
-    let detectors_enabled = DetectorsEnabled {
-        JsonDetector: true,
-        TomlDetector: true,
-        YamlDetector: true,
-        ShellScriptDetector: true,
-        RustDetector: true,
-        PythonDetector: true,
-        DockerDetector: true,
-        LicenseDetector: true,
-        GitDetector: true,
-        ReadmeDetector: true,
-    };
+    let detectors_enabled = create_detectors_enabled();
     let data = detect(repo, &detectors_enabled)?;
 
     let mut data_with_defaults = default_context_data();
     data_with_defaults.override_with(&data);
 
     Ok(data_with_defaults)
+}
+
+fn create_detectors_enabled() -> FunctionEnabled {
+    let mut detectors_enabled = FunctionEnabled::new();
+
+    for detector in DETECTORS.iter() {
+        debug!("Running detector: {}", detector.name());
+        detectors_enabled.add(detector.name().to_owned(), detector.default_enabled());
+    }
+
+    detectors_enabled
 }

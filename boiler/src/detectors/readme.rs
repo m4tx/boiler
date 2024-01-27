@@ -1,11 +1,13 @@
 use std::collections::BTreeMap;
 
+use boiler_macros::FunctionMeta;
 use regex::Regex;
 
 use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+#[derive(Debug, FunctionMeta)]
 pub struct ReadmeDetector;
 
 impl Detector for ReadmeDetector {

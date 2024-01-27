@@ -1,9 +1,9 @@
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::template_renderer;
 
-#[derive(Debug, ActionMeta)]
+#[derive(Debug, FunctionMeta)]
 pub struct DependabotConfigAction;
 
 const DEPENDABOT_CONFIG_FILENAME: &str = ".github/dependabot.yml";

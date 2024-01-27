@@ -1,12 +1,12 @@
 use anyhow::Context;
-use boiler_macros::ActionMeta;
+use boiler_macros::FunctionMeta;
 use regex::Regex;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::actions_utils::write_file;
 use crate::template_renderer::TERA;
 
-#[derive(Debug, ActionMeta)]
+#[derive(Debug, FunctionMeta)]
 pub struct ReadmeAction;
 
 const README_FILENAME: &str = "README.md";

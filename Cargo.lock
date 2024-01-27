@@ -181,10 +181,12 @@ dependencies = [
 name = "boiler"
 version = "0.1.0"
 dependencies = [
+ "anstream",
  "anyhow",
  "boiler_macros",
  "chrono",
  "clap",
+ "clap-verbosity-flag",
  "comrak",
  "env_logger",
  "gix",
@@ -314,6 +316,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap-verbosity-flag"
+version = "2.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b57f73ca21b17a0352944b9bb61803b6007bd911b6cccfef7153f7f0600ac495"
+dependencies = [
+ "clap",
+ "log",
+]
+
+[[package]]
 name = "clap_builder"
 version = "4.4.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -358,9 +370,9 @@ checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
 name = "comrak"
-version = "0.20.0"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f18e72341e6cdc7489cffb76f993812a14a906db54dedb020044ccc211dcaae"
+checksum = "6751998a48e2327773c95f6f8e03c6e77c0156ce539d74c17d2199ff3d05e197"
 dependencies = [
  "clap",
  "derive_builder",

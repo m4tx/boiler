@@ -5,6 +5,13 @@ members = [
 ]
 resolver = "2"
 
+[workspace.package]
+repository = "https://github.com/m4tx/boiler.git"
+homepage = "https://github.com/m4tx/boiler"
+license = "MIT"
+edition = "2021"
+rust-version = "1.73.0"
+
 [profile.release]
 codegen-units = 1
 lto = true

@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use boiler_macros::FunctionMeta;
 use chrono::Datelike;
 use gix::revision::walk::Info;
 use gix::traverse::commit::ancestors::Error;
@@ -9,6 +10,7 @@ use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+#[derive(Debug, FunctionMeta)]
 pub struct GitDetector;
 
 impl Detector for GitDetector {

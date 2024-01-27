@@ -1,5 +1,6 @@
 use anyhow::Context;
 use dependabot_config::DependabotConfigAction;
+use log::debug;
 use once_cell::sync::Lazy;
 use pre_commit_config::PreCommitConfigAction;
 use readme::ReadmeAction;
@@ -11,6 +12,7 @@ use crate::actions::license::LicenseAction;
 use crate::actions::pre_commit_ci::PreCommitCiAction;
 use crate::actions::python::PythonCiAction;
 use crate::data::{Repo, Value};
+use crate::function_meta::{FunctionEnabled, FunctionMeta};
 
 mod dependabot_config;
 mod docker;
@@ -30,13 +32,7 @@ pub struct ActionData {
 
 type ActionResult = anyhow::Result<()>;
 
-pub trait ActionMeta {
-    fn name(&self) -> &'static str;
-    fn description(&self) -> &'static str;
-    fn default_enabled(&self) -> bool;
-}
-
-pub trait Action: ActionMeta + Send + Sync {
+pub trait Action: FunctionMeta + Send + Sync {
     fn run(&self, data: &ActionData) -> ActionResult;
 }
 
@@ -54,12 +50,33 @@ pub static ACTIONS: Lazy<[&dyn Action; 9]> = Lazy::new(|| {
     ]
 });
 
-pub fn run_all_actions(action_data: &ActionData) -> ActionResult {
+pub fn run_actions(action_data: &ActionData, actions_enabled: &FunctionEnabled) -> ActionResult {
     for action in *ACTIONS {
-        action
-            .run(action_data)
-            .with_context(|| format!("Failed to run action: {}", action.name()))?;
+        if actions_enabled.is_enabled(action.name()) {
+            action
+                .run(action_data)
+                .with_context(|| format!("Failed to run action: {}", action.name()))?;
+        }
     }
 
     Ok(())
+}
+
+pub fn run_all_actions(action_data: &ActionData) -> ActionResult {
+    let actions_enabled = create_actions_enabled();
+
+    run_actions(action_data, &actions_enabled)?;
+
+    Ok(())
+}
+
+fn create_actions_enabled() -> FunctionEnabled {
+    let mut actions_enabled = FunctionEnabled::new();
+
+    for action in ACTIONS.iter() {
+        debug!("Running action: {}", action.name());
+        actions_enabled.add(action.name().to_owned(), action.default_enabled());
+    }
+
+    actions_enabled
 }

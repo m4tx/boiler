@@ -12,6 +12,7 @@ pub enum DockerDetectorError {
     ReadDir(#[from] std::io::Error),
 }
 
+#[derive(Debug, boiler_macros::FunctionMeta)]
 pub struct DockerDetector;
 
 fn dockerfile_cmp(a: &str, b: &str) -> std::cmp::Ordering {

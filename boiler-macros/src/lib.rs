@@ -3,21 +3,22 @@ use proc_macro_crate::{crate_name, FoundCrate};
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(ActionMeta)]
-pub fn derive_heap_size(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[proc_macro_derive(FunctionMeta)]
+pub fn derive_function_meta(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
     let name = input.ident;
+    let name_str = name.to_string();
 
-    if !name.to_string().ends_with("Action") {
+    if !name_str.ends_with("Action") && !name_str.ends_with("Detector") {
         return name
             .span()
-            .error("ActionMeta can only be derived for types ending with 'Action'")
+            .error("FunctionMeta can only be derived for types ending with 'Action' or 'Detector'")
             .emit_as_item_tokens()
             .into();
     }
 
-    let action_name = name.to_string().replace("Action", "");
+    let function_name = name_str.replace("Action", "").replace("Detector", "");
 
     let docs = get_comment(&input.attrs);
 
@@ -33,8 +34,8 @@ pub fn derive_heap_size(input: proc_macro::TokenStream) -> proc_macro::TokenStre
     };
 
     let expanded = quote! {
-        impl #crate_ident::actions::ActionMeta for #name {
-            fn name(&self) -> &'static str { #action_name }
+        impl #crate_ident::function_meta::FunctionMeta for #name {
+            fn name(&self) -> &'static str { #function_name }
             fn description(&self) -> &'static str { #docs }
             fn default_enabled(&self) -> bool { true }
         }

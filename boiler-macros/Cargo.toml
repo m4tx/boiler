@@ -1,14 +1,14 @@
 [package]
 name = "boiler_macros"
 version = "0.1.0"
-edition = "2021"
 description = "TODO"
 categories = ["development-tools"]
 authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
-readme = "../README.md"
-repository = "https://github.com/m4tx/boiler.git"
-homepage = "https://github.com/m4tx/boiler"
-license = "MIT"
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [lib]
 proc-macro = true
