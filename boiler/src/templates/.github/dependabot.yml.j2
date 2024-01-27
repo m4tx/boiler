@@ -1,0 +1,50 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+{% if 'rust' in boiler.langs %}
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      dependencies:
+        update-types:
+          - "minor"
+          - "patch"
+{% endif -%}
+{% if 'python' in boiler.langs %}
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      dependencies:
+        update-types:
+          - "minor"
+          - "patch"
+{% endif -%}
+{% if 'docker' in boiler.langs %}
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      dependencies:
+        update-types:
+          - "minor"
+          - "patch"
+{% endif -%}
+{% if boiler.has_git_submodules %}
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+{% endif -%}

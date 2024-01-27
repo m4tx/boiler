@@ -1,0 +1,30 @@
+[package]
+name = "boiler_macros"
+version = "0.1.0"
+edition = "2021"
+description = "TODO"
+categories = ["development-tools"]
+authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
+readme = "../README.md"
+repository = "https://github.com/m4tx/boiler.git"
+homepage = "https://github.com/m4tx/boiler"
+license = "MIT"
+
+[lib]
+proc-macro = true
+
+[[test]]
+name = "tests"
+path = "tests/compile_tests.rs"
+
+[dependencies]
+syn = { version = "2.0.48", features = ["full"] }
+quote = "1.0.21"
+proc-macro2 = "1.0.43"
+proc-macro2-diagnostics = "0.10.1"
+proc-macro-crate = "3.1.0"
+
+[dev-dependencies]
+trybuild = { version = "1.0.64", features = ["diff"] }
+serde = { version = "1.0.144", features = ["derive"] }
+boiler = { path = "../boiler" }
