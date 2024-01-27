@@ -3,20 +3,20 @@
 
 {% if 'rust' in boiler.langs -%}
 [![Rust Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Rust%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/rust.yml)
-{% endif -%}
-{%- if 'python' in boiler.langs -%}
+{%- endif %}
+{%- if 'python' in boiler.langs %}
 [![Python Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Python%20CI/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/python.yml)
-{% endif -%}
-{%- if 'docker' in boiler.langs -%}
+{%- endif %}
+{%- if 'docker' in boiler.langs %}
 [![Docker Build Status](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/workflows/Docker/badge.svg)](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/actions/workflows/docker-publish.yml)
-{% endif -%}
-{%- if boiler.crate_name -%}
+{%- endif %}
+{%- if boiler.crate_name %}
 [![crates.io](https://img.shields.io/crates/v/{{ boiler.crate_name }}.svg)](https://crates.io/crates/{{ boiler.crate_name }})
 [![Documentation](https://docs.rs/{{ boiler.crate_name }}/badge.svg)](https://docs.rs/{{ boiler.crate_name }})
-{% endif -%}
-{%- if boiler.license != 'LicenseRef-proprietary' -%}
+{%- endif %}
+{%- if boiler.license != 'LicenseRef-proprietary' %}
 [![{{ boiler.license }} licensed](https://img.shields.io/github/license/{{ boiler.repo_owner }}/{{ boiler.repo_name }})](https://github.com/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/blob/master/LICENSE)
-{% endif -%}
-{% if 'rust' in boiler.langs -%}
+{%- endif %}
+{%- if 'rust' in boiler.langs %}
 [![codecov](https://codecov.io/gh/{{ boiler.repo_owner }}/{{ boiler.repo_name }}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{ boiler.repo_owner }}/{{ boiler.repo_name }})
-{% endif -%}
+{%- endif -%}
