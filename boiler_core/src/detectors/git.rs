@@ -10,6 +10,8 @@ use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+/// Detects if the project is using git as the VCS and detects basic metadata,
+/// such as repository owner/name and the activity period.
 #[derive(Debug, FunctionMeta)]
 pub struct GitDetector;
 

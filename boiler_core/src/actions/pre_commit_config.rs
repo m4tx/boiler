@@ -3,6 +3,7 @@ use boiler_macros::FunctionMeta;
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::template_renderer;
 
+/// Generates a pre-commit configuration file.
 #[derive(Debug, FunctionMeta)]
 pub struct PreCommitConfigAction;
 

@@ -4,6 +4,7 @@ use crate::actions::{Action, ActionData, ActionResult};
 use crate::data::Value;
 use crate::{context_keys, template_renderer};
 
+/// Generates a rustfmt configuration file.
 #[derive(Debug, FunctionMeta)]
 pub struct RustfmtTomlAction;
 

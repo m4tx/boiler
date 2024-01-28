@@ -6,6 +6,7 @@ use crate::actions::{Action, ActionData, ActionResult};
 use crate::actions_utils::write_file;
 use crate::template_renderer::TERA;
 
+/// Updated the README.md file header with badges.
 #[derive(Debug, FunctionMeta)]
 pub struct ReadmeAction;
 

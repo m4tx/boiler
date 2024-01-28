@@ -18,6 +18,8 @@ struct CargoPackage {
     authors: Option<Vec<String>>,
 }
 
+/// Detects if the project contains Rust files, and retrieves basic metadata
+/// from Cargo.toml, such as authors or the crate name.
 #[derive(Debug, FunctionMeta)]
 pub struct RustDetector;
 

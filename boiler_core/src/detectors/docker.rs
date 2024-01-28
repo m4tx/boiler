@@ -12,6 +12,7 @@ pub enum DockerDetectorError {
     ReadDir(#[from] std::io::Error),
 }
 
+/// Detects the existence of Dockerfiles.
 #[derive(Debug, boiler_macros::FunctionMeta)]
 pub struct DockerDetector;
 

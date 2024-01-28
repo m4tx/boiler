@@ -4,6 +4,7 @@ use crate::data::Repo;
 use crate::detectors::{Detector, DetectorResult};
 use crate::detectors_utils::detect_by_header;
 
+/// Detects if the project contains shell scripts.
 #[derive(Debug, FunctionMeta)]
 pub struct ShellScriptDetector;
 

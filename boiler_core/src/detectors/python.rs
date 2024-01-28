@@ -6,6 +6,8 @@ use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+/// Detects if the project contains Python files and checks which package
+/// manager the project is using.
 #[derive(Debug, FunctionMeta)]
 pub struct PythonDetector;
 

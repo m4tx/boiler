@@ -7,6 +7,7 @@ use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+/// Retrieves the project name from the README.md file.
 #[derive(Debug, FunctionMeta)]
 pub struct ReadmeDetector;
 

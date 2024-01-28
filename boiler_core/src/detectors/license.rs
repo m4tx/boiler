@@ -7,6 +7,7 @@ use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 
+/// Detects the license of the project using the LICENSE file.
 #[derive(Debug, FunctionMeta)]
 pub struct LicenseDetector;
 

@@ -3,6 +3,7 @@ use boiler_macros::FunctionMeta;
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::{context_keys, template_renderer};
 
+/// Generates the LICENSE file, updating year or author if necessary.
 #[derive(Debug, FunctionMeta)]
 pub struct LicenseAction;
 

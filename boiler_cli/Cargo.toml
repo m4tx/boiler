@@ -16,5 +16,6 @@ anyhow = "1.0.79"
 boiler_core = { path = "../boiler_core" }
 clap = { version = "4.4.17", features = ["derive"] }
 clap-verbosity-flag = "2.1.2"
+color-print = "0.3.5"
 env_logger = "0.11.0"
 log.workspace = true

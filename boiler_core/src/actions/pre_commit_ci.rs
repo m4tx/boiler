@@ -3,6 +3,7 @@ use boiler_macros::FunctionMeta;
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::template_renderer;
 
+/// Generates CI configuration for GitHub Actions that runs pre-commit.
 #[derive(Debug, FunctionMeta)]
 pub struct PreCommitCiAction;
 

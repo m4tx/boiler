@@ -4,6 +4,7 @@ use crate::actions::{Action, ActionData, ActionResult};
 use crate::data::Value;
 use crate::{context_keys, template_renderer};
 
+/// Generates a Docker CI configuration file for GitHub Actions.
 #[derive(Debug, FunctionMeta)]
 pub struct DockerCiAction;
 
