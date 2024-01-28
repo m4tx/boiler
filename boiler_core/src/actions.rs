@@ -30,6 +30,13 @@ pub struct ActionData {
     pub context: Value,
 }
 
+impl ActionData {
+    #[must_use]
+    pub fn new(repo: Repo, context: Value) -> Self {
+        Self { repo, context }
+    }
+}
+
 type ActionResult = anyhow::Result<()>;
 
 pub trait Action: FunctionMeta + Send + Sync {

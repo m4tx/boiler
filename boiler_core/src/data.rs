@@ -193,6 +193,17 @@ impl Value {
                     bail!("incompatible string values: {:?} and {:?}", a, b)
                 }
             }
+            (Self::Number(a), Self::Number(b)) => {
+                if a != b {
+                    bail!("incompatible number values: {:?} and {:?}", a, b)
+                }
+            }
+            (Self::Bool(a), Self::Bool(b)) => {
+                if a != b {
+                    bail!("incompatible bool values: {:?} and {:?}", a, b)
+                }
+            }
+            (Self::Null, Self::Null) => {}
             (a, b) => bail!("incompatible types: {:?} and {:?}", a, b),
         }
 
@@ -445,7 +456,7 @@ impl<'de> Deserialize<'de> for Value {
 
 #[cfg(test)]
 mod tests {
-    use crate::data::Number;
+    use crate::data::{Number, Value};
 
     #[test]
     fn test_serialize_value_yaml() {
@@ -503,5 +514,121 @@ f:
 
         let value_deserialized: Value = serde_yaml::from_str(&yaml).unwrap();
         assert_eq!(value, value_deserialized);
+    }
+
+    #[test]
+    fn test_value_null_union() {
+        let mut val = Value::new_null();
+        val.union(&Value::new_null()).unwrap();
+        assert_eq!(val, Value::new_null());
+    }
+
+    #[test]
+    fn test_value_number_union() {
+        let mut val = Value::new_number(13);
+        val.union(&Value::new_number(13)).unwrap();
+        assert_eq!(val, Value::new_number(13));
+
+        let mut val = Value::new_number(13);
+        assert!(val.union(&Value::new_number(20)).is_err());
+    }
+
+    #[test]
+    fn test_value_string_union() {
+        let mut val = Value::new_string("test");
+        val.union(&Value::new_string("test")).unwrap();
+        assert_eq!(val, Value::new_string("test"));
+
+        let mut val = Value::new_string("test");
+        assert!(val.union(&Value::new_string("other")).is_err());
+    }
+
+    #[test]
+    fn test_value_array_union() {
+        let mut val = Value::new_array(vec![Value::new_string("a")]);
+        val.union(&Value::new_array(vec![Value::new_string("b")]))
+            .unwrap();
+        assert_eq!(
+            val,
+            Value::new_array(vec![Value::new_string("a"), Value::new_string("b")])
+        );
+    }
+
+    #[test]
+    fn test_value_object_union() {
+        let mut a = Value::new_object([
+            ("a".to_owned(), Value::new_string("a")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("c")]),
+                )]),
+            ),
+        ]);
+        let b = Value::new_object([
+            ("a".to_owned(), Value::new_string("a")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("d")]),
+                )]),
+            ),
+            ("e".to_owned(), Value::new_string("e")),
+        ]);
+        let expected = Value::new_object([
+            ("a".to_owned(), Value::new_string("a")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("c"), Value::new_string("d")]),
+                )]),
+            ),
+            ("e".to_owned(), Value::new_string("e")),
+        ]);
+
+        a.union(&b).unwrap();
+        assert_eq!(a, expected);
+    }
+
+    #[test]
+    fn test_value_object_override() {
+        let mut a = Value::new_object([
+            ("a".to_owned(), Value::new_string("a")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("c")]),
+                )]),
+            ),
+        ]);
+        let b = Value::new_object([
+            ("a".to_owned(), Value::new_string("X")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("Y")]),
+                )]),
+            ),
+            ("e".to_owned(), Value::new_string("Z")),
+        ]);
+        let expected = Value::new_object([
+            ("a".to_owned(), Value::new_string("X")),
+            (
+                "b".to_owned(),
+                Value::new_object([(
+                    "c".to_owned(),
+                    Value::new_array(vec![Value::new_string("Y")]),
+                )]),
+            ),
+            ("e".to_owned(), Value::new_string("Z")),
+        ]);
+
+        a.override_with(&b);
+        assert_eq!(a, expected);
     }
 }

@@ -4,9 +4,27 @@ use std::path::Path;
 
 use ignore::Walk;
 
+use crate::actions::ActionData;
 use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::DetectorResult;
+
+pub trait ActionDataExt {
+    fn has_lang(&self, lang: &str) -> bool;
+}
+
+impl ActionDataExt for ActionData {
+    fn has_lang(&self, lang: &str) -> bool {
+        self.context
+            .as_object()
+            .expect("context is not an object")
+            .get(context_keys::LANGS)
+            .unwrap_or(&Value::new_array([]))
+            .as_array()
+            .expect("langs is not an array")
+            .contains(&Value::new_string(lang))
+    }
+}
 
 pub fn detect_by_extension(repo: &Repo, extensions: &[&str], lang: &str) -> DetectorResult {
     detect_by_predicate(repo, lang, |path| {

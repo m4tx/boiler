@@ -1,10 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use once_cell::sync::Lazy;
 use tera::Tera;
 
 use crate::actions::ActionData;
 use crate::actions_utils::{write_file, ActionIoError};
+use crate::context_keys::CONTEXT_ROOT;
+use crate::data::Value;
 
 macro_rules! template {
     ($template_name:literal) => {
@@ -69,10 +71,18 @@ pub static TERA: Lazy<Tera> = Lazy::new(|| {
 pub fn render_template(file_name: &str, data: &ActionData) -> Result<(), TemplateRendererError> {
     let template_name = format!("{}.j2", file_name);
     let output = TERA
-        .render(&template_name, &data.context.clone().into())
+        .render(&template_name, &build_template_renderer_context(data))
         .map_err(TemplateRendererError::Rendering)?;
 
     write_file(&data.repo, file_name, &output).map_err(TemplateRendererError::Io)?;
 
     Ok(())
+}
+
+pub fn build_template_renderer_context(data: &ActionData) -> tera::Context {
+    Value::new_object(BTreeMap::from([(
+        CONTEXT_ROOT.to_string(),
+        data.context.clone(),
+    )]))
+    .into()
 }

@@ -1,3 +1,5 @@
+pub const CONTEXT_ROOT: &str = "boiler";
+
 pub const CRATE_NAME: &str = "crate_name";
 pub const DOCKERFILES: &str = "dockerfiles";
 pub const FIRST_ACTIVITY_YEAR: &str = "first_activity_year";

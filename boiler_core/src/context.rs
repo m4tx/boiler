@@ -24,6 +24,8 @@ pub fn default_context_data() -> Value {
     let mut data = Value::new_object(BTreeMap::new());
 
     data.insert(crate::context_keys::LICENSE, "LicenseRef-proprietary");
+    data.insert(crate::context_keys::LANGS, Value::new_array([]));
+    data.insert(crate::context_keys::FRAMEWORKS, Value::new_array([]));
     data.insert(
         crate::context_keys::GH_ACTIONS_RUST_VERSIONS,
         vec![Value::new_string("stable"), Value::new_string("nightly")],
