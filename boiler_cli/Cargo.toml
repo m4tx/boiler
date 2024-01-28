@@ -1,9 +1,10 @@
 [package]
 name = "boiler"
-version = "0.1.0"
 description = "TODO"
-authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
-readme = "../README.md"
+categories = ["command-line-utilities", "development-tools"]
+version.workspace = true
+authors.workspace = true
+readme.workspace = true
 repository.workspace = true
 homepage.workspace = true
 license.workspace = true
@@ -12,8 +13,8 @@ rust-version.workspace = true
 
 [dependencies]
 anstream = "0.6.11"
-anyhow = "1.0.79"
-boiler_core = { path = "../boiler_core" }
+anyhow.workspace = true
+boiler_core.workspace = true
 clap = { version = "4.4.18", features = ["derive"] }
 clap-verbosity-flag = "2.1.2"
 color-print = "0.3.5"
