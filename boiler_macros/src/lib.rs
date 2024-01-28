@@ -33,8 +33,9 @@ pub fn derive_function_meta(input: proc_macro::TokenStream) -> proc_macro::Token
         }
     };
 
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     let expanded = quote! {
-        impl #crate_ident::function_meta::FunctionMeta for #name {
+        impl #impl_generics #crate_ident::function_meta::FunctionMeta for #name #ty_generics #where_clause {
             fn name(&self) -> &'static str { #function_name }
             fn description(&self) -> &'static str { #docs }
             fn default_enabled(&self) -> bool { true }

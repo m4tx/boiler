@@ -1,9 +1,10 @@
 [package]
 name = "boiler_macros"
-version = "0.1.0"
 description = "TODO"
 categories = ["development-tools"]
-authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
+version.workspace = true
+authors.workspace = true
+readme.workspace = true
 repository.workspace = true
 homepage.workspace = true
 license.workspace = true
@@ -25,6 +26,6 @@ quote = "1.0.21"
 syn = { version = "2.0.48", features = ["full"] }
 
 [dev-dependencies]
-boiler_core = { path = "../boiler_core" }
+boiler_core.workspace = true
 serde.workspace = true
 trybuild = { version = "1.0.64", features = ["diff"] }

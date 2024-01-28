@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use anyhow::Context;
+use chrono::Utc;
 use docker::DockerDetector;
 use git::GitDetector;
 use license::LicenseDetector;
@@ -35,25 +36,25 @@ pub trait Detector: FunctionMeta + Send + Sync {
     fn detect(&self, repo: &Repo) -> DetectorResult;
 }
 
-pub static DETECTORS: Lazy<[&dyn Detector; 10]> = Lazy::new(|| {
+pub static DETECTORS: Lazy<[Box<dyn Detector>; 10]> = Lazy::new(|| {
     [
-        &DockerDetector,
-        &GitDetector,
-        &JsonDetector,
-        &LicenseDetector,
-        &PythonDetector,
-        &ReadmeDetector,
-        &RustDetector,
-        &ShellScriptDetector,
-        &TomlDetector,
-        &YamlDetector,
+        Box::new(DockerDetector),
+        Box::new(GitDetector::new(Utc)),
+        Box::new(JsonDetector),
+        Box::new(LicenseDetector),
+        Box::new(PythonDetector),
+        Box::new(ReadmeDetector),
+        Box::new(RustDetector),
+        Box::new(ShellScriptDetector),
+        Box::new(TomlDetector),
+        Box::new(YamlDetector),
     ]
 });
 
 fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
     let mut data = Value::new_object(BTreeMap::new());
 
-    for detector in *DETECTORS {
+    for detector in DETECTORS.iter() {
         if detectors_enabled.is_enabled(detector.name()) {
             let detector_result = detector
                 .detect(repo)

@@ -1,9 +1,10 @@
 [package]
 name = "boiler_core"
-version = "0.1.0"
 description = "TODO"
-authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
-readme = "../README.md"
+categories = ["command-line-utilities", "development-tools"]
+version.workspace = true
+authors.workspace = true
+readme.workspace = true
 repository.workspace = true
 homepage.workspace = true
 license.workspace = true
@@ -11,8 +12,8 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-anyhow = "1.0.79"
-boiler_macros = { path = "../boiler_macros" }
+anyhow.workspace = true
+boiler_macros.workspace = true
 chrono = "0.4.33"
 comrak = "0.21.0"
 gix = { version = "0.58.0", features = ["basic"] }

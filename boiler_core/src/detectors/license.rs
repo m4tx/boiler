@@ -34,10 +34,11 @@ impl Detector for LicenseDetector {
 
 impl LicenseDetector {
     fn detect_license(&self, license_text: &str) -> Option<&str> {
-        if license_text.contains("MIT License") {
+        let text_lower = license_text.to_lowercase();
+        if text_lower.contains("mit license") {
             Some("MIT")
-        } else if license_text.contains("GNU General Public License")
-            && license_text.contains("Version 3")
+        } else if text_lower.contains("gnu general public license")
+            && text_lower.contains("version 3")
         {
             Some("GNU GPL v3")
         } else {
@@ -54,5 +55,83 @@ impl LicenseDetector {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::context_keys;
+    use crate::data::Value;
+    use crate::detectors::license::LicenseDetector;
+    use crate::detectors::Detector;
+    use crate::test_utils::TempRepo;
+
+    #[test]
+    fn test_detect_license_mit() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "LICENSE",
+            r#"MIT License
+
+Copyright (c) 2024 John Paul
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"#,
+        );
+
+        let detector = LicenseDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([
+                (context_keys::LICENSE.to_owned(), Value::new_string("MIT")),
+                (
+                    context_keys::FULL_NAME.to_owned(),
+                    Value::new_string("John Paul")
+                )
+            ])
+        );
+    }
+    #[test]
+    fn test_detect_license_gpl_v3() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "LICENSE",
+            r#"                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+"#,
+        );
+
+        let detector = LicenseDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([(
+                context_keys::LICENSE.to_owned(),
+                Value::new_string("GNU GPL v3")
+            )])
+        );
     }
 }

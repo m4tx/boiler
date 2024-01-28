@@ -57,6 +57,18 @@ impl Number {
     }
 }
 
+impl From<i64> for Number {
+    fn from(value: i64) -> Self {
+        Self::new_integer(value)
+    }
+}
+
+impl From<f64> for Number {
+    fn from(value: f64) -> Self {
+        Self::new_float(value)
+    }
+}
+
 impl From<Number> for tera::Number {
     fn from(value: Number) -> Self {
         match value {
@@ -90,8 +102,8 @@ impl Value {
     }
 
     #[must_use]
-    pub fn new_number(value: Number) -> Self {
-        Self::Number(value)
+    pub fn new_number<T: Into<Number>>(value: T) -> Self {
+        Self::Number(value.into())
     }
 
     #[must_use]

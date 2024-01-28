@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use assert_fs::fixture::{FileWriteStr, PathChild};
 use assert_fs::TempDir;
