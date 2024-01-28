@@ -7,3 +7,5 @@ pub mod detectors;
 mod detectors_utils;
 pub mod function_meta;
 mod template_renderer;
+#[cfg(test)]
+mod test_utils;

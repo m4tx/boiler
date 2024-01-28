@@ -66,3 +66,39 @@ impl Detector for DockerDetector {
         Ok(data)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::context_keys;
+    use crate::data::Value;
+    use crate::detectors::docker::DockerDetector;
+    use crate::detectors::Detector;
+    use crate::test_utils::TempRepo;
+
+    #[test]
+    fn test_detect_docker() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str("Dockerfile", "FROM nginx");
+        temp_repo.write_str("test.dockerfile", "FROM nginx");
+
+        let detector = DockerDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([
+                (
+                    context_keys::LANGS.to_owned(),
+                    Value::new_array(vec![Value::new_string("docker")])
+                ),
+                (
+                    context_keys::DOCKERFILES.to_owned(),
+                    Value::new_array(vec![
+                        Value::new_string("Dockerfile"),
+                        Value::new_string("test.dockerfile")
+                    ])
+                ),
+            ])
+        );
+    }
+}

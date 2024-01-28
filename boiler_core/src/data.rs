@@ -13,8 +13,8 @@ pub struct Repo {
 
 impl Repo {
     #[must_use]
-    pub fn new(path: PathBuf) -> Self {
-        Self { path }
+    pub fn new<T: Into<PathBuf>>(path: T) -> Self {
+        Self { path: path.into() }
     }
 
     #[must_use]

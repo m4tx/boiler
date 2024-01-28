@@ -37,3 +37,29 @@ const SHELLSCRIPT_SHEBANGS: [&[u8]; 21] = [
     b"#!/bin/zsh",
     b"#!/bin/sh",
 ];
+
+#[cfg(test)]
+mod tests {
+    use crate::context_keys;
+    use crate::data::Value;
+    use crate::detectors::shell_script::ShellScriptDetector;
+    use crate::detectors::Detector;
+    use crate::test_utils::TempRepo;
+
+    #[test]
+    fn test_detect_shell_script() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str("manage", "#!/usr/bin/bash\n\necho \"Hello, world!\"");
+
+        let detector = ShellScriptDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([(
+                context_keys::LANGS.to_owned(),
+                Value::new_array(vec![Value::new_string("shell")])
+            ),])
+        );
+    }
+}
