@@ -1,10 +1,13 @@
 pub const CONTEXT_ROOT: &str = "boiler";
 
+pub const COVERAGE_ENABLED: &str = "coverage_enabled";
 pub const CRATE_NAME: &str = "crate_name";
+pub const CRATE_PUBLISHED: &str = "crate_published";
 pub const DOCKERFILES: &str = "dockerfiles";
 pub const FIRST_ACTIVITY_YEAR: &str = "first_activity_year";
 pub const FRAMEWORKS: &str = "frameworks";
 pub const FULL_NAME: &str = "full_name";
+pub const GIT_HAS_SUBMODULES: &str = "git_has_submodules";
 pub const GH_ACTIONS_RUST_FEATURES: &str = "gh_actions_rust_features";
 pub const GH_ACTIONS_RUST_OS: &str = "gh_actions_rust_os";
 pub const GH_ACTIONS_RUST_VERSIONS: &str = "gh_actions_rust_versions";

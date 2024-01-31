@@ -23,6 +23,8 @@ impl ContextOverrides {
 pub fn default_context_data() -> Value {
     let mut data = Value::new_object(BTreeMap::new());
 
+    data.insert(crate::context_keys::CRATE_PUBLISHED, true);
+    data.insert(crate::context_keys::COVERAGE_ENABLED, true);
     data.insert(crate::context_keys::LICENSE, "LicenseRef-proprietary");
     data.insert(crate::context_keys::LANGS, Value::new_array([]));
     data.insert(crate::context_keys::FRAMEWORKS, Value::new_array([]));

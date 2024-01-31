@@ -1,4 +1,3 @@
-{% raw -%}
 name: Rust CI
 
 on:
@@ -13,25 +12,36 @@ env:
 # See: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#concurrency.
 # This will ensure that only one commit will be running tests at a time on each PR.
 concurrency:
-  group: ${{ github.ref }}-${{ github.workflow }}
+  group: {% raw %}${{ github.ref }}-${{ github.workflow }}{% endraw %}
   cancel-in-progress: true
 
 jobs:
   build:
     strategy:
       matrix:
-{%- endraw %}
         rust: [{{ boiler.gh_actions_rust_versions | join(sep=", ") }}]
         os: [{{ boiler.gh_actions_rust_os | join(sep=", ") }}]
 {%- if boiler.gh_actions_rust_features %}
         features: {{ boiler.gh_actions_rust_features | to_yaml_array }}
 {%- endif %}
-{%- raw %}
 
-    runs-on: ${{ matrix.os }}
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+{%- if boiler.git_has_submodules %}
+        with:
+          submodules: recursive
+{%- endif %}
+
+{%- if boiler.apt_dependencies %}
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y {{ boiler.apt_dependencies }}
+{%- endif %}
 
       - name: Cache Cargo registry
         uses: actions/cache@v4
@@ -39,18 +49,18 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}
+          key: {% raw %}${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}{% endraw %}
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ matrix.rust }}
+          toolchain: {% raw %}${{ matrix.rust }}{% endraw %}
 
       - name: Build
-        run: cargo +${{ matrix.rust }} build --features=${{ matrix.features }}
+        run: cargo {% raw %}+${{ matrix.rust }} build --features=${{ matrix.features }}{% endraw %}
 
       - name: Test
-        run: cargo +${{ matrix.rust }} test --features=${{ matrix.features }}
+        run: cargo {% raw %}+${{ matrix.rust }} test --features=${{ matrix.features }}{% endraw %}
 
   clippy:
     runs-on: ubuntu-latest
@@ -58,6 +68,19 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+{%- if boiler.git_has_submodules %}
+        with:
+          submodules: recursive
+{%- endif %}
+
+{%- if boiler.apt_dependencies %}
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y {{ boiler.apt_dependencies }}
+{%- endif %}
 
       - name: Cache Cargo registry
         uses: actions/cache@v4
@@ -65,15 +88,17 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}
+          key: {% raw %}${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}{% endraw %}
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@beta
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: stable
           components: clippy
 
       - name: Run clippy
         run: cargo clippy -- -Dclippy::all
+{%- if boiler.coverage_enabled %}
 
   coverage:
     runs-on: ubuntu-latest
@@ -81,6 +106,19 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+{%- if boiler.git_has_submodules %}
+        with:
+          submodules: recursive
+{%- endif %}
+
+{%- if boiler.apt_dependencies %}
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y {{ boiler.apt_dependencies }}
+{%- endif %}
 
       - name: Cache Cargo registry
         uses: actions/cache@v4
@@ -88,7 +126,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}
+          key: {% raw %}${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}{% endraw %}
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -115,7 +153,8 @@ jobs:
           files: ./coverage.lcov
           flags: rust
           fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
+{%- endif %}
 
   rustfmt:
     runs-on: ubuntu-latest
@@ -130,7 +169,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}
+          key: {% raw %}${{ runner.os }}-cargo-debug-${{ hashFiles('**/Cargo.toml') }}{% endraw %}
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -140,4 +179,3 @@ jobs:
 
       - name: Run fmt
         run: cargo fmt --all -- --check
-{% endraw -%}

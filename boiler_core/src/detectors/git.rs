@@ -43,6 +43,8 @@ impl<C: Clock + Send + Sync> Detector for GitDetector<C> {
                 data.insert(context_keys::REPO_OWNER, owner);
                 data.insert(context_keys::REPO_NAME, name);
             }
+
+            data.insert(context_keys::GIT_HAS_SUBMODULES, self.has_submodules(repo));
         }
 
         Ok(data)
@@ -126,6 +128,11 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
             Ok(None)
         }
     }
+
+    fn has_submodules(&self, repo: &Repo) -> bool {
+        let submodule_file = repo.path().join(".gitmodules");
+        submodule_file.exists()
+    }
 }
 
 #[cfg(test)]
@@ -174,6 +181,10 @@ mod tests {
                 (
                     context_keys::LAST_ACTIVITY_YEAR.to_owned(),
                     Value::new_number(2023)
+                ),
+                (
+                    context_keys::GIT_HAS_SUBMODULES.to_owned(),
+                    Value::new_bool(false)
                 )
             ])
         );
@@ -191,6 +202,13 @@ mod tests {
             .unwrap();
             temp_repo.write_str("README.md", "hello world");
             run_git(&["add", "README.md"], &temp_repo).unwrap();
+            temp_repo.write_str(
+                ".gitmodules",
+                r#"[submodule "libfoo"]
+	path = include/foo
+	url = git://foo.com/git/lib.git"#,
+            );
+
             let envs = [
                 ("GIT_CONFIG_GLOBAL", "/dev/null"),
                 ("GIT_AUTHOR_NAME", "A U Thor"),
@@ -228,6 +246,10 @@ mod tests {
                 (
                     context_keys::LAST_ACTIVITY_YEAR.to_owned(),
                     Value::new_number(2022)
+                ),
+                (
+                    context_keys::GIT_HAS_SUBMODULES.to_owned(),
+                    Value::new_bool(true)
                 )
             ])
         );

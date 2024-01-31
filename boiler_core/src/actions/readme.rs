@@ -37,7 +37,8 @@ impl Action for ReadmeAction {
                 &build_template_renderer_context(data),
             )
             .with_context(|| format!("could not render {}", README_HEADER_TEMPLATE))?;
-        readme = format!("{}\n{}", output, readme);
+        readme = format!("{}\n\n{}", output, readme);
+        let readme = readme.trim().to_owned() + "\n";
 
         write_file(&data.repo, README_FILENAME, &readme)?;
 

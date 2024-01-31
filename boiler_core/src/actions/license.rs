@@ -86,5 +86,8 @@ mod tests {
         LicenseAction.run(&action_data).unwrap();
 
         assert!(repo.file_not_empty(LICENSE_FILENAME));
+        assert!(repo
+            .read_str(LICENSE_FILENAME)
+            .starts_with("                    GNU GENERAL PUBLIC LICENSE\n"));
     }
 }

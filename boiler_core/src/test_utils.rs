@@ -29,6 +29,11 @@ impl TempRepo {
         Repo::new(self.path())
     }
 
+    pub fn read_str(&self, path: &str) -> String {
+        let path = self.temp_dir.child(path);
+        fs::read_to_string(path.path()).unwrap()
+    }
+
     pub fn write_str(&self, path: &str, content: &str) {
         self.temp_dir.child(path).write_str(content).unwrap();
     }
