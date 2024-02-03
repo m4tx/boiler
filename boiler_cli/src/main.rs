@@ -5,9 +5,12 @@ use boiler_core::run_in_repo;
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::InfoLevel;
 use color_print::cprintln;
+use shadow_rs::shadow;
+
+shadow!(build);
 
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version = version_string(), about, long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]
@@ -50,6 +53,10 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn version_string() -> String {
+    format!("{} (commit {})", build::PKG_VERSION, build::SHORT_COMMIT)
 }
 
 fn list_detectors() {

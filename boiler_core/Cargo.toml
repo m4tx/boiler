@@ -1,6 +1,6 @@
 [package]
 name = "boiler_core"
-description = "TODO"
+description = "Highly opinionated CLI tool for creating and updating boilerplate files for your projects - core library"
 categories = ["command-line-utilities", "development-tools"]
 version.workspace = true
 authors.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "boiler"
-description = "TODO"
+description = "Highly opinionated CLI tool for creating and updating boilerplate files for your projects"
 categories = ["command-line-utilities", "development-tools"]
 version.workspace = true
 authors.workspace = true
@@ -20,3 +20,7 @@ clap-verbosity-flag = "2.1.2"
 color-print = "0.3.5"
 env_logger = "0.11.1"
 log.workspace = true
+shadow-rs.workspace = true
+
+[build-dependencies]
+shadow-rs.workspace = true
