@@ -59,6 +59,14 @@ mod tests {
                     context_keys::GH_ACTIONS_RUST_OS.to_owned(),
                     Value::new_array(vec![Value::new_string("ubuntu-latest")]),
                 ),
+                (
+                    context_keys::FRAMEWORKS.to_owned(),
+                    Value::new_array(vec![]),
+                ),
+                (
+                    context_keys::TRUNK_CONFIGS.to_owned(),
+                    Value::new_array(vec![]),
+                ),
             ]),
         );
 
