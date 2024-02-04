@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use thiserror::Error;
 
 use crate::context_keys;
@@ -49,7 +47,7 @@ impl Detector for DockerDetector {
         }
         dockerfiles.sort_by(|a, b| dockerfile_cmp(a, b));
 
-        let mut data = Value::new_object(BTreeMap::new());
+        let mut data = Value::empty_object();
         if !dockerfiles.is_empty() {
             data.insert(context_keys::LANGS, vec![Value::new_string("docker")]);
             data.insert(

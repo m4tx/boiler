@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use boiler_macros::FunctionMeta;
 
 use crate::context_keys;
@@ -13,7 +11,7 @@ pub struct PythonDetector;
 
 impl Detector for PythonDetector {
     fn detect(&self, repo: &Repo) -> DetectorResult {
-        let mut data = Value::new_object(BTreeMap::new());
+        let mut data = Value::empty_object();
 
         let mut package_managers = Vec::new();
 

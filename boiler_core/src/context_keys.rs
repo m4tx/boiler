@@ -18,4 +18,5 @@ pub const NAME: &str = "name";
 pub const PYTHON_PACKAGE_MANAGERS: &str = "python_package_managers";
 pub const REPO_NAME: &str = "repo_name";
 pub const REPO_OWNER: &str = "repo_owner";
+pub const TRUNK_CONFIGS: &str = "trunk_configs";
 pub const VCS: &str = "vcs";

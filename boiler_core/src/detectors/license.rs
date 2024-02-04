@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use boiler_macros::FunctionMeta;
 use regex::Regex;
 
@@ -13,7 +11,7 @@ pub struct LicenseDetector;
 
 impl Detector for LicenseDetector {
     fn detect(&self, repo: &Repo) -> DetectorResult {
-        let mut data = Value::new_object(BTreeMap::new());
+        let mut data = Value::empty_object();
 
         let license_file = repo.path().join("LICENSE");
         if license_file.exists() {
@@ -37,6 +35,10 @@ impl LicenseDetector {
         let text_lower = license_text.to_lowercase();
         if text_lower.contains("mit license") {
             Some("MIT")
+        } else if text_lower.contains("gnu affero general public license")
+            && text_lower.contains("version 3")
+        {
+            Some("GNU AGPL v3")
         } else if text_lower.contains("gnu general public license")
             && text_lower.contains("version 3")
         {
@@ -131,6 +133,31 @@ SOFTWARE.
             Value::new_object([(
                 context_keys::LICENSE.to_owned(),
                 Value::new_string("GNU GPL v3")
+            )])
+        );
+    }
+    #[test]
+    fn test_detect_license_agpl_v3() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "LICENSE",
+            r#"                    GNU AFFERO GENERAL PUBLIC LICENSE
+                       Version 3, 19 November 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+"#,
+        );
+
+        let detector = LicenseDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([(
+                context_keys::LICENSE.to_owned(),
+                Value::new_string("GNU AGPL v3")
             )])
         );
     }

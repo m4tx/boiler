@@ -1,6 +1,5 @@
-use std::collections::BTreeMap;
-
 use boiler_macros::FunctionMeta;
+use ignore::Walk;
 use serde::Deserialize;
 
 use crate::context_keys;
@@ -25,7 +24,7 @@ pub struct RustDetector;
 
 impl Detector for RustDetector {
     fn detect(&self, repo: &Repo) -> DetectorResult {
-        let mut data = Value::new_object(BTreeMap::new());
+        let mut data = Value::empty_object();
 
         let cargo_toml = repo.path().join("Cargo.toml");
         if cargo_toml.exists() {
@@ -52,7 +51,41 @@ impl Detector for RustDetector {
             }
         }
 
+        let trunk_data = self.detect_trunk(repo)?;
+        data.union(&trunk_data)
+            .expect("could not merge trunk context data");
+
         Ok(data)
+    }
+}
+
+impl RustDetector {
+    fn detect_trunk(&self, repo: &Repo) -> DetectorResult {
+        let mut config_paths = vec![];
+
+        for entry in Walk::new(repo.path()) {
+            let path = entry?.path().to_owned();
+            if path.is_file() && path.file_name().unwrap_or_default() == "Trunk.toml" {
+                let path_on_repo = path
+                    .strip_prefix(repo.path())
+                    .expect("could not strip repo prefix")
+                    .to_owned();
+                config_paths.push(path_on_repo);
+            }
+        }
+
+        if config_paths.is_empty() {
+            Ok(Value::empty_object())
+        } else {
+            let mut data = Value::empty_object();
+            data.insert(context_keys::FRAMEWORKS, [Value::new_string("trunk")]);
+            let config_paths: Vec<_> = config_paths
+                .into_iter()
+                .map(|path| Value::new_string(path.to_string_lossy()))
+                .collect();
+            data.insert(context_keys::TRUNK_CONFIGS, config_paths);
+            Ok(data)
+        }
     }
 }
 
@@ -92,6 +125,100 @@ mod tests {
                 (
                     context_keys::FULL_NAME.to_owned(),
                     Value::new_string("John Doe")
+                ),
+            ])
+        );
+    }
+
+    #[test]
+    fn test_detect_trunk() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "Cargo.toml",
+            r"
+            [package]
+            name = 'my_crate'
+            authors = ['John Doe <test@example.com>']",
+        );
+        temp_repo.write_str(
+            "subdir/Trunk.toml",
+            r#"[[proxy]]
+rewrite = "api"
+"#,
+        );
+
+        let detector = RustDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([
+                (
+                    context_keys::LANGS.to_owned(),
+                    Value::new_array([Value::new_string("rust")])
+                ),
+                (
+                    context_keys::CRATE_NAME.to_owned(),
+                    Value::new_string("my_crate")
+                ),
+                (
+                    context_keys::FULL_NAME.to_owned(),
+                    Value::new_string("John Doe")
+                ),
+                (
+                    context_keys::FRAMEWORKS.to_owned(),
+                    Value::new_array([Value::new_string("trunk")])
+                ),
+                (
+                    context_keys::TRUNK_CONFIGS.to_owned(),
+                    Value::new_array([Value::new_string("subdir/Trunk.toml")])
+                ),
+            ])
+        );
+    }
+
+    #[test]
+    fn test_detect_trunk_in_base() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "Cargo.toml",
+            r"
+            [package]
+            name = 'my_crate'
+            authors = ['John Doe <test@example.com>']",
+        );
+        temp_repo.write_str(
+            "Trunk.toml",
+            r#"[[proxy]]
+rewrite = "api"
+"#,
+        );
+
+        let detector = RustDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([
+                (
+                    context_keys::LANGS.to_owned(),
+                    Value::new_array([Value::new_string("rust")])
+                ),
+                (
+                    context_keys::CRATE_NAME.to_owned(),
+                    Value::new_string("my_crate")
+                ),
+                (
+                    context_keys::FULL_NAME.to_owned(),
+                    Value::new_string("John Doe")
+                ),
+                (
+                    context_keys::FRAMEWORKS.to_owned(),
+                    Value::new_array([Value::new_string("trunk")])
+                ),
+                (
+                    context_keys::TRUNK_CONFIGS.to_owned(),
+                    Value::new_array([Value::new_string("Trunk.toml")])
                 ),
             ])
         );

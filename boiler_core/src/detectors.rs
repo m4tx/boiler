@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use anyhow::Context;
 use chrono::Utc;
 use docker::DockerDetector;
@@ -52,7 +50,7 @@ pub static DETECTORS: Lazy<[Box<dyn Detector>; 10]> = Lazy::new(|| {
 });
 
 fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
-    let mut data = Value::new_object(BTreeMap::new());
+    let mut data = Value::empty_object();
 
     for detector in DETECTORS.iter() {
         if detectors_enabled.is_enabled(detector.name()) {

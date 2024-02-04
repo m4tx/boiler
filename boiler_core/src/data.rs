@@ -122,6 +122,11 @@ impl Value {
     }
 
     #[must_use]
+    pub fn empty_object() -> Self {
+        Self::Object(BTreeMap::new())
+    }
+
+    #[must_use]
     pub fn as_bool(&self) -> Option<bool> {
         match self {
             Self::Bool(value) => Some(*value),
@@ -280,6 +285,12 @@ impl From<&str> for Value {
 
 impl From<Vec<Value>> for Value {
     fn from(value: Vec<Value>) -> Self {
+        Self::new_array(value)
+    }
+}
+
+impl<const N: usize> From<[Value; N]> for Value {
+    fn from(value: [Value; N]) -> Self {
         Self::new_array(value)
     }
 }

@@ -50,6 +50,23 @@ pub fn to_yaml_array(
     Ok(tera::Value::String("[".to_string() + &array_str + "]"))
 }
 
+pub fn path_parent(
+    value: &tera::Value,
+    _args: &HashMap<String, tera::Value>,
+) -> tera::Result<tera::Value> {
+    let value = value
+        .as_str()
+        .ok_or_else(|| tera::Error::msg("value is not a string"))?;
+
+    let parent = std::path::Path::new(value)
+        .parent()
+        .ok_or_else(|| tera::Error::msg("could not get parent"))?
+        .to_string_lossy()
+        .to_string();
+
+    Ok(tera::Value::String(parent))
+}
+
 pub static TERA: Lazy<Tera> = Lazy::new(|| {
     let mut tera = Tera::default();
     tera.add_raw_templates(vec![
@@ -65,6 +82,7 @@ pub static TERA: Lazy<Tera> = Lazy::new(|| {
     ])
     .expect("could not add raw templates");
     tera.register_filter("to_yaml_array", to_yaml_array);
+    tera.register_filter("path_parent", path_parent);
     tera
 });
 

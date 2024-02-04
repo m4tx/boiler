@@ -13,3 +13,6 @@ m4tx/tundra:
   coverage_enabled: false
   gh_actions_rust_os: ["ubuntu-latest"]
   apt_dependencies: pkg-config libdbus-1-dev libgtk-4-dev libadwaita-1-dev libnotify-dev gettext
+
+m4tx/chombo-gen:
+  coverage_enabled: false

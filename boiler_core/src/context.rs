@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use crate::data::Value;
 
@@ -21,7 +21,7 @@ impl ContextOverrides {
 }
 
 pub fn default_context_data() -> Value {
-    let mut data = Value::new_object(BTreeMap::new());
+    let mut data = Value::empty_object();
 
     data.insert(crate::context_keys::CRATE_PUBLISHED, true);
     data.insert(crate::context_keys::COVERAGE_ENABLED, true);

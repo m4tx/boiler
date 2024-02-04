@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
 
@@ -61,11 +60,11 @@ fn detect_by_predicate(
     for entry in Walk::new(repo.path()) {
         let path = entry?.path().to_owned();
         if path.is_file() && predicate(&path)? {
-            let mut data = Value::new_object(BTreeMap::new());
+            let mut data = Value::empty_object();
             data.insert(context_keys::LANGS, vec![Value::new_string(lang)]);
             return Ok(data);
         }
     }
 
-    Ok(Value::new_object(BTreeMap::new()))
+    Ok(Value::empty_object())
 }

@@ -55,12 +55,28 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: {% raw %}${{ matrix.rust }}{% endraw %}
+{%- if 'trunk' in boiler.frameworks %}
+          targets: wasm32-unknown-unknown
+{%- endif %}
+
+{%- if 'trunk' in boiler.frameworks %}
+
+      - name: Install trunk
+        run: cargo install trunk
+{%- endif %}
 
       - name: Build
         run: cargo {% raw %}+${{ matrix.rust }} build --features=${{ matrix.features }}{% endraw %}
 
       - name: Test
         run: cargo {% raw %}+${{ matrix.rust }} test --features=${{ matrix.features }}{% endraw %}
+
+{%- for trunk_config in boiler.trunk_configs %}
+{%- set trunk_dir = trunk_config | path_parent %}
+
+      - name: Build Trunk project{% if trunk_config != "" %} {{ trunk_dir }}{% endif %}
+        run: {% if trunk_config != "" %}cd {{ trunk_dir }} && {% endif %}trunk build
+{%- endfor %}
 
   clippy:
     runs-on: ubuntu-latest
@@ -141,7 +157,7 @@ jobs:
           RUSTFLAGS: "-Cinstrument-coverage"
 
       - name: Install grcov
-        uses: baptiste0928/cargo-install@v2
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: grcov
 

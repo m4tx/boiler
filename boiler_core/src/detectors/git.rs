@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use anyhow::Context;
 use boiler_macros::FunctionMeta;
 use chrono::{DateTime, Datelike, Utc};
@@ -23,7 +21,7 @@ pub struct GitDetector<C = Utc> {
 
 impl<C: Clock + Send + Sync> Detector for GitDetector<C> {
     fn detect(&self, repo: &Repo) -> DetectorResult {
-        let mut data = Value::new_object(BTreeMap::new());
+        let mut data = Value::empty_object();
 
         let git_dir = repo.path().join(".git");
         if git_dir.exists() {
@@ -117,7 +115,8 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
     fn parse_remote_url(remote_url: &Url) -> anyhow::Result<Option<(String, String)>> {
         let remote_url_string = remote_url.to_bstring().to_string();
 
-        let repo_regex = Regex::new(r"^git@github\.com:(\S+)/(\S+).git$").unwrap();
+        let repo_regex =
+            Regex::new(r"^(?:git@github\.com:|https://.+@github\.com/)(\S+)/(\S+).git$").unwrap();
 
         if let Some(captures) = repo_regex.captures(&remote_url_string) {
             let owner = captures.get(1).unwrap().as_str();
