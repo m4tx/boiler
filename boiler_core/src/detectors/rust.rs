@@ -1,5 +1,6 @@
 use boiler_macros::FunctionMeta;
 use ignore::Walk;
+use path_slash::PathExt;
 use serde::Deserialize;
 
 use crate::context_keys;
@@ -81,7 +82,7 @@ impl RustDetector {
             data.insert(context_keys::FRAMEWORKS, [Value::new_string("trunk")]);
             let config_paths: Vec<_> = config_paths
                 .into_iter()
-                .map(|path| Value::new_string(path.to_string_lossy()))
+                .map(|path| Value::new_string(path.to_slash_lossy()))
                 .collect();
             data.insert(context_keys::TRUNK_CONFIGS, config_paths);
             Ok(data)

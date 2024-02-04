@@ -220,6 +220,7 @@ dependencies = [
  "ignore",
  "log",
  "once_cell",
+ "path-slash",
  "regex",
  "serde",
  "serde_yaml",
@@ -2050,6 +2051,12 @@ checksum = "c705f256449c60da65e11ff6626e0c16a0a0b96aaa348de61376b249bc340f41"
 dependencies = [
  "regex",
 ]
+
+[[package]]
+name = "path-slash"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e91099d4268b0e11973f036e885d652fb0b21fedcf69738c627f94db6a44f42"
 
 [[package]]
 name = "percent-encoding"
