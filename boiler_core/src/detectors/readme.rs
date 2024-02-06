@@ -17,7 +17,7 @@ impl Detector for ReadmeDetector {
         if readme_path.exists() {
             let readme = std::fs::read_to_string(readme_path).expect("could not read README.md");
             let name_regex_setext = Regex::new(r"(?m)^(.+)\n=+$").unwrap();
-            let name_regex_header = Regex::new(r"^# (.+)$").unwrap();
+            let name_regex_header = Regex::new(r"(?m)^# (.+)$").unwrap();
 
             if let Some(captures) = name_regex_setext
                 .captures(&readme)

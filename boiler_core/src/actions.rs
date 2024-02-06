@@ -45,15 +45,15 @@ pub trait Action: FunctionMeta + Send + Sync {
 
 pub static ACTIONS: Lazy<[&dyn Action; 9]> = Lazy::new(|| {
     [
-        &PreCommitConfigAction,
-        &LicenseAction,
-        &RustfmtTomlAction,
         &DependabotConfigAction,
-        &RustCiAction,
-        &PythonCiAction,
         &DockerCiAction,
-        &ReadmeAction,
+        &LicenseAction,
         &PreCommitCiAction,
+        &PreCommitConfigAction,
+        &PythonCiAction,
+        &ReadmeAction,
+        &RustCiAction,
+        &RustfmtTomlAction,
     ]
 });
 

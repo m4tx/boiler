@@ -41,6 +41,18 @@ updates:
     schedule:
       interval: monthly
 {%- endif %}
+{%- if 'javascript' in boiler.langs %}
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      dependencies:
+        update-types:
+          - minor
+          - patch
+{%- endif %}
 {%- if 'python' in boiler.langs %}
 
   - package-ecosystem: pip

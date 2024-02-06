@@ -11,6 +11,7 @@ use rust::RustDetector;
 
 use crate::context::default_context_data;
 use crate::data::{Repo, Value};
+use crate::detectors::javascript::JavascriptDetector;
 use crate::detectors::json::JsonDetector;
 use crate::detectors::shell_script::ShellScriptDetector;
 use crate::detectors::toml::TomlDetector;
@@ -19,6 +20,7 @@ use crate::function_meta::{FunctionEnabled, FunctionMeta};
 
 mod docker;
 mod git;
+mod javascript;
 mod json;
 mod license;
 mod python;
@@ -34,10 +36,11 @@ pub trait Detector: FunctionMeta + Send + Sync {
     fn detect(&self, repo: &Repo) -> DetectorResult;
 }
 
-pub static DETECTORS: Lazy<[Box<dyn Detector>; 10]> = Lazy::new(|| {
+pub static DETECTORS: Lazy<[Box<dyn Detector>; 11]> = Lazy::new(|| {
     [
         Box::new(DockerDetector),
         Box::new(GitDetector::new(Utc)),
+        Box::new(JavascriptDetector),
         Box::new(JsonDetector),
         Box::new(LicenseDetector),
         Box::new(PythonDetector),

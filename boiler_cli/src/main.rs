@@ -14,23 +14,37 @@ shadow!(build);
 #[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Command>,
 
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity<InfoLevel>,
 }
 
-#[derive(Subcommand, Debug)]
-enum Commands {
+impl Cli {
+    pub fn command(&self) -> Command {
+        self.command.clone().unwrap_or_default()
+    }
+}
+
+#[derive(Subcommand, Debug, Clone)]
+enum Command {
     /// List all detectors with a short description
     ListDetectors,
     /// List all actions with a short description
     ListActions,
     /// Run all actions in a repository
     Update {
-        #[clap(long, short, default_value = ".")]
-        repo: PathBuf,
+        /// The path to the repository; defaults to the current working
+        /// directory
+        #[clap(long, short)]
+        repo: Option<PathBuf>,
     },
+}
+
+impl Default for Command {
+    fn default() -> Self {
+        Command::Update { repo: None }
+    }
 }
 
 fn main() -> anyhow::Result<()> {
@@ -40,15 +54,15 @@ fn main() -> anyhow::Result<()> {
         .filter_module("boiler", cli.verbose.log_level_filter())
         .init();
 
-    match &cli.command {
-        Commands::ListDetectors => {
+    match &cli.command() {
+        Command::ListDetectors => {
             list_detectors();
         }
-        Commands::ListActions => {
+        Command::ListActions => {
             list_actions();
         }
-        Commands::Update { repo } => {
-            run_in_repo(Repo::new(repo.clone()))?;
+        Command::Update { repo } => {
+            run_in_repo(Repo::new(repo.clone().unwrap_or(PathBuf::from("."))))?;
         }
     }
 
