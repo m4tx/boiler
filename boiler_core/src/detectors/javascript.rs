@@ -1,6 +1,5 @@
 use boiler_macros::FunctionMeta;
 
-use crate::context_keys;
 use crate::data::{Repo, Value};
 use crate::detectors::{Detector, DetectorResult};
 use crate::detectors_utils::detect_by_extension;
@@ -33,7 +32,6 @@ mod tests {
     use crate::context_keys;
     use crate::data::Value;
     use crate::detectors::javascript::JavascriptDetector;
-    use crate::detectors::json::JsonDetector;
     use crate::detectors::Detector;
     use crate::test_utils::TempRepo;
 
