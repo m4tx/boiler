@@ -1,18 +1,28 @@
 m4tx/riichi-hand-rs:
-  gh_actions_rust_features:
-    - ""
-    - "raster-renderer"
-    - "raster-renderer,fluffy-stuff-tile-sets"
-    - "raster-renderer,martin-persson-tile-sets"
+  context:
+    gh_actions_rust_features:
+      - ""
+      - "raster-renderer"
+      - "raster-renderer,fluffy-stuff-tile-sets"
+      - "raster-renderer,martin-persson-tile-sets"
 
 riichi/chombot:
-  gh_actions_rust_os: ["ubuntu-latest", "macos-latest"]
+  context:
+    gh_actions_rust_os: [ubuntu-latest, macos-latest]
 
 m4tx/tundra:
-  crate_published: false
-  coverage_enabled: false
-  gh_actions_rust_os: ["ubuntu-latest"]
-  apt_dependencies: pkg-config libdbus-1-dev libgtk-4-dev libadwaita-1-dev libnotify-dev gettext
+  context:
+    crate_published: false
+    coverage_enabled: false
+    gh_actions_rust_os: [ubuntu-latest]
+    apt_dependencies: pkg-config libdbus-1-dev libgtk-4-dev libadwaita-1-dev libnotify-dev gettext
 
 m4tx/chombo-gen:
-  coverage_enabled: false
+  context:
+    coverage_enabled: false
+
+m4tx/ryg-rans-sys:
+  actions_excluded:
+    - RustCi
+  context:
+    coverage_enabled: false

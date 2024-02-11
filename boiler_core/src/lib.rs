@@ -2,7 +2,7 @@ use anyhow::Context;
 use log::info;
 
 use crate::actions::ActionData;
-use crate::context::ContextOverrides;
+use crate::context::{RepoConfig, ReposConfig};
 use crate::data::Repo;
 
 pub mod actions;
@@ -28,23 +28,28 @@ pub fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
         + data["repo_name"].as_string().unwrap();
     info!("Detected context:\n{}", data.as_yaml());
 
-    let context_overrides = ContextOverrides::from_yaml_string(include_str!("overrides.yml"));
-    if let Some(repo_override) = context_overrides.get(&repo_string) {
-        info!(
-            "Overriding context for {} with:\n{}",
-            repo_string,
-            repo_override.as_yaml()
-        );
-        data.override_with(repo_override);
+    let mut repo_config = RepoConfig::default();
 
-        info!("New context:\n{}", data.as_yaml());
+    let repos_config = ReposConfig::from_yaml_string(include_str!("overrides.yml"));
+    if let Some(repo_override) = repos_config.get(&repo_string) {
+        repo_config = repo_config.override_with(repo_override);
     }
 
+    info!(
+        "Overriding context for {} with:\n{}",
+        repo_string,
+        repo_config.context().as_yaml()
+    );
+    data.override_with(repo_config.context());
+
+    info!("New context:\n{}", data.as_yaml());
+
+    let actions_enabled = repo_config.create_actions_enabled(&actions::create_actions_enabled())?;
     let action_data = ActionData {
         repo,
         context: data,
     };
-    actions::run_all_actions(&action_data)
+    actions::run_actions(&action_data, &actions_enabled)
         .with_context(|| format!("Could not run actions for {}", repo_path.display()))?;
 
     Ok(())

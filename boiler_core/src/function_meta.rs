@@ -20,7 +20,7 @@ impl<T: FunctionMeta> FunctionMeta for &T {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FunctionEnabled {
     enabled_map: BTreeMap<String, bool>,
 }
@@ -47,5 +47,9 @@ impl FunctionEnabled {
             .enabled_map
             .get(function_name)
             .expect("Function not found")
+    }
+
+    pub fn function_names(&self) -> impl Iterator<Item = &String> {
+        self.enabled_map.keys()
     }
 }

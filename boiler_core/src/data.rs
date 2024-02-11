@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
 use std::path::{Path, PathBuf};
 
-use anyhow::{bail, Context};
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use thiserror::Error;
 
 #[derive(Clone, Debug)]
 pub struct Repo {
@@ -78,6 +78,24 @@ impl From<Number> for tera::Number {
             }
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Error)]
+pub enum ValueUnionError {
+    #[error("incompatible types: {0:?} and {1:?}")]
+    IncompatibleTypes(Value, Value),
+    #[error("incompatible string values: {0:?} and {1:?}")]
+    IncompatibleStringValues(String, String),
+    #[error("incompatible number values: {0:?} and {1:?}")]
+    IncompatibleNumberValues(Number, Number),
+    #[error("incompatible bool values: {0:?} and {1:?}")]
+    IncompatibleBoolValues(bool, bool),
+    #[error("incompatible object at key {key}")]
+    IncompatibleObject {
+        key: String,
+        #[source]
+        error: Box<ValueUnionError>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -175,14 +193,17 @@ impl Value {
         }
     }
 
-    pub fn union(&mut self, other: &Self) -> anyhow::Result<()> {
+    pub fn union(&mut self, other: &Self) -> Result<(), ValueUnionError> {
         match (self, other) {
             (Self::Object(a), Self::Object(b)) => {
                 for (key, value) in b {
                     if let Some(self_value) = a.get_mut(key) {
-                        self_value
-                            .union(value)
-                            .with_context(|| format!("at key {:?}", key))?;
+                        self_value.union(value).map_err(|e| {
+                            ValueUnionError::IncompatibleObject {
+                                key: key.clone(),
+                                error: Box::new(e),
+                            }
+                        })?;
                     } else {
                         a.insert(key.clone(), value.clone());
                     }
@@ -195,21 +216,26 @@ impl Value {
             }
             (Self::String(a), Self::String(b)) => {
                 if a != b {
-                    bail!("incompatible string values: {:?} and {:?}", a, b)
+                    return Err(ValueUnionError::IncompatibleStringValues(
+                        a.clone(),
+                        b.clone(),
+                    ));
                 }
             }
             (Self::Number(a), Self::Number(b)) => {
                 if a != b {
-                    bail!("incompatible number values: {:?} and {:?}", a, b)
+                    return Err(ValueUnionError::IncompatibleNumberValues(*a, *b));
                 }
             }
             (Self::Bool(a), Self::Bool(b)) => {
                 if a != b {
-                    bail!("incompatible bool values: {:?} and {:?}", a, b)
+                    return Err(ValueUnionError::IncompatibleBoolValues(*a, *b));
                 }
             }
             (Self::Null, Self::Null) => {}
-            (a, b) => bail!("incompatible types: {:?} and {:?}", a, b),
+            (a, b) => {
+                return Err(ValueUnionError::IncompatibleTypes(a.clone(), b.clone()));
+            }
         }
 
         Ok(())

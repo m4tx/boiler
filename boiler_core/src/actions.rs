@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 use anyhow::Context;
 use dependabot_config::DependabotConfigAction;
 use log::debug;
@@ -6,6 +8,7 @@ use pre_commit_config::PreCommitConfigAction;
 use readme::ReadmeAction;
 use rust_ci::RustCiAction;
 use rustfmt_toml::RustfmtTomlAction;
+use serde::{Deserialize, Serialize};
 
 use crate::actions::docker::DockerCiAction;
 use crate::actions::license::LicenseAction;
@@ -60,30 +63,46 @@ pub static ACTIONS: Lazy<[&dyn Action; 9]> = Lazy::new(|| {
 pub fn run_actions(action_data: &ActionData, actions_enabled: &FunctionEnabled) -> ActionResult {
     for action in *ACTIONS {
         if actions_enabled.is_enabled(action.name()) {
+            debug!("Running action: {}", action.name());
             action
                 .run(action_data)
                 .with_context(|| format!("Failed to run action: {}", action.name()))?;
+        } else {
+            debug!("Action disabled: {}", action.name());
         }
     }
 
     Ok(())
 }
 
-pub fn run_all_actions(action_data: &ActionData) -> ActionResult {
-    let actions_enabled = create_actions_enabled();
-
-    run_actions(action_data, &actions_enabled)?;
-
-    Ok(())
-}
-
-fn create_actions_enabled() -> FunctionEnabled {
+pub fn create_actions_enabled() -> FunctionEnabled {
     let mut actions_enabled = FunctionEnabled::new();
 
     for action in ACTIONS.iter() {
-        debug!("Running action: {}", action.name());
         actions_enabled.add(action.name().to_owned(), action.default_enabled());
     }
 
     actions_enabled
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+#[repr(transparent)]
+pub struct ActionName(String);
+
+impl ActionName {
+    pub fn new(name: String) -> Self {
+        Self(name)
+    }
+
+    #[must_use]
+    pub fn name(&self) -> &str {
+        &self.0
+    }
+}
+
+impl Display for ActionName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
 }

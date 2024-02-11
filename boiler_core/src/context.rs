@@ -1,22 +1,126 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
+use serde::Deserialize;
+use thiserror::Error;
+
+use crate::actions::{Action, ActionName};
 use crate::data::Value;
+use crate::function_meta::FunctionEnabled;
 
-#[derive(Debug)]
-pub struct ContextOverrides {
-    overrides: HashMap<String, Value>,
+#[derive(Debug, Deserialize)]
+pub struct ReposConfig {
+    repos: HashMap<String, RepoConfig>,
 }
 
-impl ContextOverrides {
+impl ReposConfig {
     #[must_use]
     pub fn from_yaml_string(yaml_string: &str) -> Self {
-        let overrides = serde_yaml::from_str(yaml_string).unwrap();
-        Self { overrides }
+        let repos = serde_yaml::from_str(yaml_string).unwrap();
+        Self { repos }
     }
 
     #[must_use]
-    pub fn get(&self, key: &str) -> Option<&Value> {
-        self.overrides.get(key)
+    pub fn get(&self, key: &str) -> Option<&RepoConfig> {
+        self.repos.get(key)
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum RepoConfigError {
+    #[error("Invalid action name: {0}")]
+    InvalidActionName(ActionName),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RepoConfig {
+    #[serde(default)]
+    actions_excluded: BTreeSet<ActionName>,
+    #[serde(default = "Value::empty_object")]
+    context: Value,
+}
+
+impl Default for RepoConfig {
+    fn default() -> Self {
+        Self {
+            actions_excluded: BTreeSet::new(),
+            context: Value::empty_object(),
+        }
+    }
+}
+
+impl RepoConfig {
+    #[must_use]
+    pub fn actions_excluded(&self) -> &BTreeSet<ActionName> {
+        &self.actions_excluded
+    }
+
+    pub fn filter_actions<'a>(
+        &self,
+        actions: &[&'a dyn Action],
+    ) -> Result<Vec<&'a dyn Action>, RepoConfigError> {
+        for action_name in &self.actions_excluded {
+            if !actions
+                .iter()
+                .any(|action| action.name() == action_name.name())
+            {
+                return Err(RepoConfigError::InvalidActionName(action_name.clone()));
+            }
+        }
+
+        Ok(actions
+            .iter()
+            .filter(|action| {
+                !self
+                    .actions_excluded
+                    .contains(&ActionName::new(action.name().to_string()))
+            })
+            .copied()
+            .collect())
+    }
+
+    pub fn create_actions_enabled(
+        &self,
+        actions_enabled: &FunctionEnabled,
+    ) -> Result<FunctionEnabled, RepoConfigError> {
+        for action_excluded in &self.actions_excluded {
+            if !actions_enabled
+                .function_names()
+                .any(|action_name| action_name == action_excluded.name())
+            {
+                return Err(RepoConfigError::InvalidActionName(action_excluded.clone()));
+            }
+        }
+
+        let mut actions_enabled = actions_enabled.clone();
+        for action_excluded in &self.actions_excluded {
+            actions_enabled.add(action_excluded.name().to_owned(), false);
+        }
+
+        Ok(actions_enabled)
+    }
+
+    #[must_use]
+    pub fn override_with(&mut self, other: &RepoConfig) -> Self {
+        let actions_excluded = self
+            .actions_excluded
+            .union(&other.actions_excluded)
+            .cloned()
+            .collect();
+        let context = {
+            let mut context = self.context.clone();
+            context.override_with(&other.context);
+            context
+        };
+
+        Self {
+            actions_excluded,
+            context,
+        }
+    }
+
+    #[must_use]
+    pub fn context(&self) -> &Value {
+        &self.context
     }
 }
 

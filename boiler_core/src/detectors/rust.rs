@@ -16,6 +16,8 @@ struct CargoToml {
 struct CargoPackage {
     name: Option<String>,
     authors: Option<Vec<String>>,
+    #[serde(rename = "rust-version")]
+    rust_version: Option<String>,
 }
 
 /// Detects if the project contains Rust files, and retrieves basic metadata
@@ -48,6 +50,9 @@ impl Detector for RustDetector {
                             .trim();
                         data.insert(context_keys::FULL_NAME, full_name);
                     }
+                }
+                if let Some(rust_version) = &package.rust_version {
+                    data.insert(context_keys::RUST_MSRV, rust_version);
                 }
             }
         }
@@ -126,6 +131,44 @@ mod tests {
                 (
                     context_keys::FULL_NAME.to_owned(),
                     Value::new_string("John Doe")
+                ),
+            ])
+        );
+    }
+
+    #[test]
+    fn test_detect_msrv() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str(
+            "Cargo.toml",
+            r"
+            [package]
+            name = 'my_crate'
+            authors = ['John Doe <test@example.com>']
+            rust-version = '1.73.0'",
+        );
+
+        let detector = RustDetector;
+        let data = detector.detect(&temp_repo.repo()).unwrap();
+
+        assert_eq!(
+            data,
+            Value::new_object([
+                (
+                    context_keys::LANGS.to_owned(),
+                    Value::new_array(vec![Value::new_string("rust")])
+                ),
+                (
+                    context_keys::CRATE_NAME.to_owned(),
+                    Value::new_string("my_crate")
+                ),
+                (
+                    context_keys::FULL_NAME.to_owned(),
+                    Value::new_string("John Doe")
+                ),
+                (
+                    context_keys::RUST_MSRV.to_owned(),
+                    Value::new_string("1.73.0")
                 ),
             ])
         );
