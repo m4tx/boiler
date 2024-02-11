@@ -40,7 +40,11 @@ pub fn to_yaml_array(
             let item_str = item
                 .as_str()
                 .ok_or_else(|| tera::Error::msg("item is not a string"))?;
-            let item_yaml = if item_str.contains('.') || item_str.contains('"') {
+            let item_yaml = if item_str.is_empty()
+                || item_str.contains('.')
+                || item_str.contains('"')
+                || item_str.contains(',')
+            {
                 format!("\"{}\"", item_str.replace('\"', "\\\""))
             } else {
                 item_str.to_string()
