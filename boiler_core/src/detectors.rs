@@ -52,7 +52,7 @@ pub static DETECTORS: Lazy<[Box<dyn Detector>; 11]> = Lazy::new(|| {
     ]
 });
 
-fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
+pub fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
     let mut data = Value::empty_object();
 
     for detector in DETECTORS.iter() {
@@ -69,9 +69,8 @@ fn detect(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
     Ok(data)
 }
 
-pub fn detect_all(repo: &Repo) -> DetectorResult {
-    let detectors_enabled = create_detectors_enabled();
-    let data = detect(repo, &detectors_enabled)?;
+pub fn detect_with_defaults(repo: &Repo, detectors_enabled: &FunctionEnabled) -> DetectorResult {
+    let data = detect(repo, detectors_enabled)?;
 
     let mut data_with_defaults = default_context_data();
     data_with_defaults.override_with(&data);
@@ -79,13 +78,71 @@ pub fn detect_all(repo: &Repo) -> DetectorResult {
     Ok(data_with_defaults)
 }
 
-fn create_detectors_enabled() -> FunctionEnabled {
+pub fn create_detectors_enabled() -> FunctionEnabled {
     let mut detectors_enabled = FunctionEnabled::new();
 
     for detector in DETECTORS.iter() {
         debug!("Running detector: {}", detector.name());
-        detectors_enabled.add(detector.name().to_owned(), detector.default_enabled());
+        detectors_enabled.set_enabled(detector.name().to_owned(), detector.default_enabled());
     }
 
     detectors_enabled
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::context_keys;
+    use crate::data::Value;
+    use crate::detectors::json::JsonDetector;
+    use crate::detectors::{create_detectors_enabled, detect, detect_with_defaults};
+    use crate::function_meta::FunctionMeta;
+    use crate::test_utils::TempRepo;
+
+    #[test]
+    fn test_detect_none_enabled() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str("test.json", "{}");
+
+        let mut detectors_enabled = create_detectors_enabled();
+        for (_fn_name, enabled) in detectors_enabled.iter_mut() {
+            *enabled = false;
+        }
+
+        let data = detect(&temp_repo.repo(), &detectors_enabled).unwrap();
+        assert_eq!(data, Value::empty_object());
+    }
+
+    #[test]
+    fn test_detect_with_defaults() {
+        let temp_repo = TempRepo::new();
+
+        let mut detectors_enabled = create_detectors_enabled();
+        for (_fn_name, enabled) in detectors_enabled.iter_mut() {
+            *enabled = false;
+        }
+
+        let data = detect_with_defaults(&temp_repo.repo(), &detectors_enabled).unwrap();
+        assert_ne!(data, Value::empty_object());
+    }
+
+    #[test]
+    fn test_detect_json_enabled() {
+        let temp_repo = TempRepo::new();
+        temp_repo.write_str("test.json", "{}");
+
+        let mut detectors_enabled = create_detectors_enabled();
+        for (_fn_name, enabled) in detectors_enabled.iter_mut() {
+            *enabled = false;
+        }
+        detectors_enabled.set_enabled(JsonDetector.name().to_owned(), true);
+
+        let data = detect(&temp_repo.repo(), &detectors_enabled).unwrap();
+        assert_eq!(
+            data,
+            Value::new_object([(
+                context_keys::LANGS.to_owned(),
+                Value::new_array(vec![Value::new_string("json")])
+            ),])
+        );
+    }
 }

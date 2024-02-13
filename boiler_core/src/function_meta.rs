@@ -38,8 +38,16 @@ impl FunctionEnabled {
         }
     }
 
-    pub fn add(&mut self, function_name: String, enabled: bool) {
+    pub fn set_enabled(&mut self, function_name: String, enabled: bool) {
         self.enabled_map.insert(function_name, enabled);
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&String, &bool)> {
+        self.enabled_map.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&String, &mut bool)> {
+        self.enabled_map.iter_mut()
     }
 
     pub fn is_enabled(&self, function_name: &str) -> bool {

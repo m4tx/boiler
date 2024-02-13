@@ -3,7 +3,8 @@ use log::info;
 
 use crate::actions::ActionData;
 use crate::context::{RepoConfig, ReposConfig};
-use crate::data::Repo;
+use crate::data::{Repo, Value};
+use crate::detectors::{create_detectors_enabled, detect_with_defaults};
 
 pub mod actions;
 mod actions_utils;
@@ -21,8 +22,9 @@ mod time;
 pub fn run_in_repo(repo: Repo) -> anyhow::Result<()> {
     let repo_path = repo.path().to_owned();
 
-    let mut data = detectors::detect_all(&repo)
-        .with_context(|| format!("Could not build context for {}", repo_path.display()))?;
+    let mut data =
+        Ok::<Value, anyhow::Error>(detect_with_defaults(&repo, &create_detectors_enabled())?)
+            .with_context(|| format!("Could not build context for {}", repo_path.display()))?;
     let repo_string = data["repo_owner"].as_string().unwrap().to_owned()
         + "/"
         + data["repo_name"].as_string().unwrap();

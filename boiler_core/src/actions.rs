@@ -79,7 +79,7 @@ pub fn create_actions_enabled() -> FunctionEnabled {
     let mut actions_enabled = FunctionEnabled::new();
 
     for action in ACTIONS.iter() {
-        actions_enabled.add(action.name().to_owned(), action.default_enabled());
+        actions_enabled.set_enabled(action.name().to_owned(), action.default_enabled());
     }
 
     actions_enabled

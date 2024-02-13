@@ -93,7 +93,7 @@ impl RepoConfig {
 
         let mut actions_enabled = actions_enabled.clone();
         for action_excluded in &self.actions_excluded {
-            actions_enabled.add(action_excluded.name().to_owned(), false);
+            actions_enabled.set_enabled(action_excluded.name().to_owned(), false);
         }
 
         Ok(actions_enabled)
