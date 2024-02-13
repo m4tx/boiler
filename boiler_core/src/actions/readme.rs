@@ -25,7 +25,9 @@ impl Action for ReadmeAction {
             String::new()
         };
 
-        let header_regex = Regex::new(r"(?m)(?:^.+\n=+$\n|^# .+$|^\s*$\n|^\[!.+\)$\n)*").unwrap();
+        // Match the top-level header, empty lines, and all the badges at the top of the
+        // README
+        let header_regex = Regex::new(r"(?m)(?:^.+\n=+\n|^# .+\n|^\s*\n|^\[!.+\)\n)*").unwrap();
         if let Some(captures) = header_regex.captures(&readme) {
             let header_end = captures.get(0).unwrap().end();
             readme = readme[header_end..].to_string();
@@ -57,10 +59,47 @@ mod tests {
     #[test]
     fn test_generate() {
         let repo = TempRepo::new();
-        let action_data = ActionData::new(
+        let action_data = get_test_action_data(&repo);
+
+        ReadmeAction.run(&action_data).unwrap();
+
+        assert!(repo.file_not_empty(README_FILENAME));
+    }
+
+    #[test]
+    fn test_overwrite() {
+        let repo = TempRepo::new();
+        repo.write_str(README_FILENAME, r#"# Example Project
+[![Build Status](https://github.com/riichi/trello-to-discord-webhook-service/workflows/some-url)](https://github.com/riichi/trello-to-discord-webhook-service/actions)
+
+This is a very useful tool!"#);
+
+        let action_data = get_test_action_data(&repo);
+
+        ReadmeAction.run(&action_data).unwrap();
+
+        assert!(repo.file_not_empty(README_FILENAME));
+        assert_eq!(
+            repo.read_str(README_FILENAME),
+            r#"Example Project
+===============
+
+[![Rust Build Status](https://github.com/m4tx/boiler/workflows/Rust%20CI/badge.svg)](https://github.com/m4tx/boiler/actions/workflows/rust.yml)
+[![MIT licensed](https://img.shields.io/github/license/m4tx/boiler)](https://github.com/m4tx/boiler/blob/master/LICENSE)
+
+This is a very useful tool!
+"#
+        );
+    }
+
+    fn get_test_action_data(repo: &TempRepo) -> ActionData {
+        ActionData::new(
             repo.repo(),
             Value::new_object([
-                (context_keys::LANGS.to_owned(), Value::new_array([])),
+                (
+                    context_keys::LANGS.to_owned(),
+                    Value::new_array([Value::new_string("rust")]),
+                ),
                 (
                     context_keys::NAME.to_owned(),
                     Value::new_string("Example Project"),
@@ -75,10 +114,6 @@ mod tests {
                     Value::new_string("boiler"),
                 ),
             ]),
-        );
-
-        ReadmeAction.run(&action_data).unwrap();
-
-        assert!(repo.file_not_empty(README_FILENAME));
+        )
     }
 }
