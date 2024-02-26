@@ -26,3 +26,9 @@ m4tx/ryg-rans-sys:
     - RustCi
   context:
     coverage_enabled: false
+
+riichi/trello-to-discord-webhook-service:
+  context:
+    coverage_enabled: false
+    crate_published: false
+    gh_actions_rust_os: [ubuntu-latest]

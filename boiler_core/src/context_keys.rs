@@ -16,6 +16,7 @@ pub const LAST_ACTIVITY_YEAR: &str = "last_activity_year";
 pub const LICENSE: &str = "license";
 pub const NAME: &str = "name";
 pub const PYTHON_PACKAGE_MANAGERS: &str = "python_package_managers";
+pub const REPO_DEFAULT_BRANCH: &str = "repo_default_branch";
 pub const REPO_NAME: &str = "repo_name";
 pub const REPO_OWNER: &str = "repo_owner";
 pub const RUST_MSRV: &str = "rust_msrv";

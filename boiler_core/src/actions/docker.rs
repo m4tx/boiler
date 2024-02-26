@@ -52,6 +52,10 @@ mod tests {
                     Value::new_array(vec![Value::new_string("boiler")]),
                 ),
                 (
+                    context_keys::REPO_DEFAULT_BRANCH.to_owned(),
+                    Value::new_array(vec![Value::new_string("master")]),
+                ),
+                (
                     context_keys::LANGS.to_owned(),
                     Value::new_array(vec![Value::new_string("docker")]),
                 ),

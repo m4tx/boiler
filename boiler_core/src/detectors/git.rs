@@ -1,6 +1,7 @@
 use anyhow::Context;
 use boiler_macros::FunctionMeta;
 use chrono::{DateTime, Datelike, Utc};
+use gix::bstr::ByteSlice;
 use gix::revision::walk::Info;
 use gix::traverse::commit::ancestors::Error;
 use gix::{Repository, Url};
@@ -36,10 +37,15 @@ impl<C: Clock + Send + Sync> Detector for GitDetector<C> {
                 last_activity_datetime.year(),
             );
 
-            let owner_name = Self::retrieve_owner_and_name(repository)?;
+            let owner_name = Self::retrieve_owner_and_name(&repository)?;
             if let Some((owner, name)) = owner_name {
                 data.insert(context_keys::REPO_OWNER, owner);
                 data.insert(context_keys::REPO_NAME, name);
+            }
+
+            let default_branch = Self::retrieve_default_branch(&repository)?;
+            if let Some(default_branch) = default_branch {
+                data.insert(context_keys::REPO_DEFAULT_BRANCH, default_branch);
             }
 
             data.insert(context_keys::GIT_HAS_SUBMODULES, self.has_submodules(repo));
@@ -94,7 +100,9 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
         )
     }
 
-    fn retrieve_owner_and_name(repository: Repository) -> anyhow::Result<Option<(String, String)>> {
+    fn retrieve_owner_and_name(
+        repository: &Repository,
+    ) -> anyhow::Result<Option<(String, String)>> {
         let remote = repository.find_default_remote(gix::remote::Direction::Fetch);
 
         if let Some(remote) = remote {
@@ -110,6 +118,31 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
             warn!("No default remote set; could not retrieve owner and repo name");
             Ok(None)
         }
+    }
+
+    fn retrieve_default_branch(repository: &Repository) -> anyhow::Result<Option<String>> {
+        let remote = repository.find_default_remote(gix::remote::Direction::Fetch);
+
+        if let Some(remote) = remote {
+            let remote = remote.with_context(|| "Could not find default remote")?;
+            if let Some(remote_name) = remote.name() {
+                let expected_ref = format!("refs/remotes/{}/HEAD", remote_name.as_bstr());
+
+                for reference in repository.references()?.remote_branches()?.flatten() {
+                    if reference.name().as_bstr().as_bytes() == expected_ref.as_bytes() {
+                        let target = reference.target();
+                        if let gix::refs::TargetRef::Symbolic(target) = target {
+                            let symbolic_ref = target.as_bstr().to_string();
+                            let branch_name = symbolic_ref
+                                .replace(&format!("refs/remotes/{}/", remote_name.as_bstr()), "");
+                            return Ok(Some(branch_name));
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(None)
     }
 
     fn parse_remote_url(remote_url: &Url) -> anyhow::Result<Option<(String, String)>> {

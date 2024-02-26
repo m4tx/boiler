@@ -146,6 +146,10 @@ pub fn default_context_data() -> Value {
     );
     data.insert(crate::context_keys::GH_ACTIONS_RUST_FEATURES, []);
     data.insert(crate::context_keys::TRUNK_CONFIGS, []);
+    data.insert(
+        crate::context_keys::REPO_DEFAULT_BRANCH,
+        Value::new_string("master"),
+    );
 
     data
 }

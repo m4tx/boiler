@@ -11,6 +11,11 @@ jobs:
 {%- for dockerfile in boiler.dockerfiles %}
   build-and-push{% if dockerfile != 'Dockerfile' %}-{{ dockerfile | replace(from=".dockerfile", to="") }}{% endif %}:
 {%- raw %}
+    # Run on external PRs and pushes to branches on the repo
+    # This is to avoid double running on PRs from internal branches
+    if:
+      github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
+      github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,9 +45,7 @@ jobs:
           context: .
 {%- endraw %}
           file: {{ dockerfile }}
-{%- raw %}
-          push: ${{ github.ref == 'refs/heads/master' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-{%- endraw %}
+          push: {% raw %}${{{% endraw %} github.ref == 'refs/heads/{{ boiler.repo_default_branch }}' {% raw %}}}{% endraw %}
+          tags: {% raw %}${{ steps.meta.outputs.tags }}{% endraw %}
+          labels: {% raw %}${{ steps.meta.outputs.labels }}{% endraw %}
 {% endfor -%}
