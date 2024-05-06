@@ -3,7 +3,7 @@ use boiler_macros::FunctionMeta;
 use chrono::{DateTime, Datelike, Utc};
 use gix::bstr::ByteSlice;
 use gix::revision::walk::Info;
-use gix::traverse::commit::ancestors::Error;
+use gix::traverse::commit::simple::Error;
 use gix::{Repository, Url};
 use log::warn;
 use regex::Regex;
@@ -69,7 +69,7 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
         if let Ok(head_commit) = head_commit {
             let rev_walk = repository
                 .rev_walk([head_commit])
-                .sorting(gix::traverse::commit::Sorting::ByCommitTimeNewestFirst)
+                .sorting(gix::traverse::commit::simple::Sorting::ByCommitTimeNewestFirst)
                 .all()
                 .with_context(|| "Could not run rev_walk")?;
             let commit_times = rev_walk
