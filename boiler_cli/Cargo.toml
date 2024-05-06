@@ -17,7 +17,7 @@ anyhow.workspace = true
 boiler_core.workspace = true
 clap = { version = "4.5.4", features = ["derive"] }
 clap-verbosity-flag = "2.2.0"
-color-print = "0.3.5"
+color-print = "0.3.6"
 env_logger = "0.11.3"
 log.workspace = true
 shadow-rs.workspace = true

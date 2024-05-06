@@ -21,9 +21,9 @@ codegen-units = 1
 lto = true
 
 [workspace.dependencies]
-anyhow = "1.0.81"
+anyhow = "1.0.82"
 boiler_core = { path = "boiler_core", version = "0.1.0" }
 boiler_macros = { path = "boiler_macros", version = "0.1.0" }
 log = "0.4.21"
-serde = { version = "1.0.197", features = ["derive"] }
+serde = { version = "1.0.199", features = ["derive"] }
 shadow-rs = "0.26.1"

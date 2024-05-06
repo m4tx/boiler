@@ -20,10 +20,10 @@ path = "tests/compile_tests.rs"
 
 [dependencies]
 proc-macro-crate = "3.1.0"
-proc-macro2 = "1.0.79"
+proc-macro2 = "1.0.81"
 proc-macro2-diagnostics = "0.10.1"
-quote = "1.0.21"
-syn = { version = "2.0.57", features = ["full"] }
+quote = "1.0.36"
+syn = { version = "2.0.60", features = ["full"] }
 
 [dev-dependencies]
 boiler_core.workspace = true
