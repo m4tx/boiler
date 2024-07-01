@@ -15,7 +15,7 @@ rust-version.workspace = true
 anstream = "0.6.14"
 anyhow.workspace = true
 boiler_core.workspace = true
-clap = { version = "4.4.18", features = ["derive"] }
+clap = { version = "4.5.8", features = ["derive"] }
 clap-verbosity-flag = "2.2.0"
 color-print = "0.3.6"
 env_logger = "0.11.3"
