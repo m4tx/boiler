@@ -42,7 +42,7 @@ jobs:
           images: ${{ env.REGISTRY }}{% endraw %}/{{ boiler.repo_owner }}/{% if dockerfile == 'Dockerfile' %}{{ boiler.repo_name }}{% else %}{{ dockerfile | replace(from=".dockerfile", to="") }}{% endif %}{% raw %}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
 {%- endraw %}
