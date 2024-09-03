@@ -109,6 +109,8 @@ jobs:
         uses: baptiste0928/cargo-install@v3
         with:
           crate: grcov
+          # Remove --locked until this issue is fixed: https://github.com/mozilla/grcov/issues/1187
+          locked: false
 
       - name: Run grcov
         run: grcov . --binary-path target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../**' --ignore '/*' -o coverage.lcov
