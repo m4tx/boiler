@@ -16,7 +16,7 @@ anstream = "0.6.18"
 anyhow.workspace = true
 boiler_core.workspace = true
 clap = { version = "4.5.21", features = ["derive"] }
-clap-verbosity-flag = "2.2.2"
+clap-verbosity-flag = "3.0.1"
 color-print = "0.3.7"
 env_logger = "0.11.5"
 log.workspace = true
