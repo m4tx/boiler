@@ -25,7 +25,7 @@ regex = "1.11.1"
 serde.workspace = true
 serde_yaml = "0.9.34"
 tera = "1.20.0"
-thiserror = "1.0.66"
+thiserror = "2.0.3"
 toml = "0.8.15"
 
 [dev-dependencies]
