@@ -55,11 +55,7 @@ pub fn write_file<T: Into<PathBuf>>(
         }
     }
 
-    debug!(
-        "Writing {} bytes to {}",
-        content.as_bytes().len(),
-        full_path.display()
-    );
+    debug!("Writing {} bytes to {}", content.len(), full_path.display());
     std::fs::write(&full_path, content).map_err(|e| ActionIoError::new_write_file(full_path, e))?;
 
     Ok(())
