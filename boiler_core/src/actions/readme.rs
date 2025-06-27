@@ -19,9 +19,9 @@ impl Action for ReadmeAction {
         let readme_path = data.repo.path().join(README_FILENAME);
         let mut readme = if readme_path.exists() {
             std::fs::read_to_string(&readme_path)
-                .with_context(|| format!("could not read {}", README_FILENAME))?
+                .with_context(|| format!("could not read {README_FILENAME}"))?
         } else {
-            warn!("{} does not exist; generating a new one", README_FILENAME);
+            warn!("{README_FILENAME} does not exist; generating a new one");
             String::new()
         };
 
@@ -38,8 +38,8 @@ impl Action for ReadmeAction {
                 README_HEADER_TEMPLATE,
                 &build_template_renderer_context(data),
             )
-            .with_context(|| format!("could not render {}", README_HEADER_TEMPLATE))?;
-        readme = format!("{}\n\n{}", output, readme);
+            .with_context(|| format!("could not render {README_HEADER_TEMPLATE}"))?;
+        readme = format!("{output}\n\n{readme}");
         let readme = readme.trim().to_owned() + "\n";
 
         write_file(&data.repo, README_FILENAME, &readme)?;

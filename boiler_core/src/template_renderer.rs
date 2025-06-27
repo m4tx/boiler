@@ -96,7 +96,7 @@ pub static TERA: Lazy<Tera> = Lazy::new(|| {
 });
 
 pub fn render_template(file_name: &str, data: &ActionData) -> Result<(), TemplateRendererError> {
-    let template_name = format!("{}.j2", file_name);
+    let template_name = format!("{file_name}.j2");
     let output = TERA
         .render(&template_name, &build_template_renderer_context(data))
         .map_err(TemplateRendererError::Rendering)?;

@@ -159,7 +159,7 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
             let name = captures.get(2).unwrap().as_str();
             Ok(Some((owner.to_string(), name.to_string())))
         } else {
-            warn!("Could not parse remote URL: {}", remote_url_string);
+            warn!("Could not parse remote URL: {remote_url_string}");
             Ok(None)
         }
     }
