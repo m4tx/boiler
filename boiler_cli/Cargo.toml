@@ -12,10 +12,9 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-anstream = "0.6.18"
 anyhow.workspace = true
 boiler_core.workspace = true
-clap = { version = "4.5.39", features = ["derive"] }
+clap = { version = "4.5.40", features = ["derive", "string"] }
 clap-verbosity-flag = "3.0.3"
 color-print = "0.3.7"
 env_logger = "0.11.8"

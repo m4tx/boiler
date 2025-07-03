@@ -15,7 +15,6 @@ rust-version.workspace = true
 anyhow.workspace = true
 boiler_macros.workspace = true
 chrono = "0.4.41"
-comrak = "0.39.0"
 gix = { version = "0.72.1", features = ["basic"] }
 ignore = "0.4.23"
 log = "0.4.27"
@@ -26,7 +25,7 @@ serde.workspace = true
 serde_yaml = "0.9.34"
 tera = "1.20.0"
 thiserror = "2.0.12"
-toml = "0.8.22"
+toml = "0.8.23"
 
 [dev-dependencies]
 assert_fs = "1.1.3"
