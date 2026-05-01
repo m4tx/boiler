@@ -26,4 +26,4 @@ boiler_core = { path = "boiler_core", version = "0.1.0" }
 boiler_macros = { path = "boiler_macros", version = "0.1.0" }
 log = "0.4.29"
 serde = { version = "1.0.228", features = ["derive"] }
-shadow-rs = "1.7.1"
+shadow-rs = "2.0.0"
