@@ -25,7 +25,7 @@ serde.workspace = true
 serde_yaml = "0.9.34"
 tera = "1.20.1"
 thiserror = "2.0.18"
-toml = "1.1.0"
+toml = "1.1.2"
 
 [dev-dependencies]
 assert_fs = "1.1.3"
