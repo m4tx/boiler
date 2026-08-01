@@ -69,17 +69,6 @@ impl From<f64> for Number {
     }
 }
 
-impl From<Number> for tera::Number {
-    fn from(value: Number) -> Self {
-        match value {
-            Number::Integer(value) => Self::from(value),
-            Number::Float(value) => {
-                Self::from_f64(value).expect("could not convert float to number")
-            }
-        }
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Error)]
 pub enum ValueUnionError {
     #[error("incompatible types: {0:?} and {1:?}")]
@@ -349,22 +338,13 @@ impl IndexMut<&str> for Value {
 
 impl From<Value> for tera::Value {
     fn from(value: Value) -> Self {
-        match value {
-            Value::Null => Self::Null,
-            Value::Bool(value) => Self::Bool(value),
-            Value::Number(value) => Self::Number(value.into()),
-            Value::String(value) => Self::String(value),
-            Value::Array(value) => Self::Array(value.into_iter().map(Self::from).collect()),
-            Value::Object(value) => {
-                Self::Object(value.into_iter().map(|(k, v)| (k, Self::from(v))).collect())
-            }
-        }
+        Self::from_serializable(&value)
     }
 }
 
 impl From<Value> for tera::Context {
     fn from(value: Value) -> Self {
-        Self::from_value(value.into()).expect("could not convert value to context")
+        Self::from_serialize(&value).expect("could not convert value to context")
     }
 }
 
