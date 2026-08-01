@@ -23,7 +23,7 @@ path-slash = "0.2.1"
 regex = "1.12.3"
 serde.workspace = true
 serde_yaml = "0.9.34"
-tera = "1.20.1"
+tera = "2.1.0"
 thiserror = "2.0.18"
 toml = "1.1.2"
 
