@@ -1,7 +1,7 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use once_cell::sync::Lazy;
-use tera::Tera;
+use tera::{Kwargs, State, Tera};
 
 use crate::actions::ActionData;
 use crate::actions_utils::{write_file, ActionIoError};
@@ -27,19 +27,16 @@ pub enum TemplateRendererError {
 }
 
 pub fn to_yaml_array(
-    value: &tera::Value,
-    _args: &HashMap<String, tera::Value>,
-) -> tera::Result<tera::Value> {
-    let value = value
-        .as_array()
-        .ok_or_else(|| tera::Error::msg("value is not an array"))?;
-
+    value: &[tera::Value],
+    _kwargs: Kwargs,
+    _state: &State,
+) -> tera::TeraResult<String> {
     let array_str = value
         .iter()
         .map(|item| {
             let item_str = item
                 .as_str()
-                .ok_or_else(|| tera::Error::msg("item is not a string"))?;
+                .ok_or_else(|| tera::Error::message("item is not a string"))?;
             let item_yaml = if item_str.is_empty()
                 || item_str.contains('.')
                 || item_str.contains('"')
@@ -56,28 +53,23 @@ pub fn to_yaml_array(
         .expect("item is not a string")
         .join(", ");
 
-    Ok(tera::Value::String("[".to_string() + &array_str + "]"))
+    Ok("[".to_string() + &array_str + "]")
 }
 
-pub fn path_parent(
-    value: &tera::Value,
-    _args: &HashMap<String, tera::Value>,
-) -> tera::Result<tera::Value> {
-    let value = value
-        .as_str()
-        .ok_or_else(|| tera::Error::msg("value is not a string"))?;
-
+pub fn path_parent(value: &str, _kwargs: Kwargs, _state: &State) -> tera::TeraResult<String> {
     let parent = std::path::Path::new(value)
         .parent()
-        .ok_or_else(|| tera::Error::msg("could not get parent"))?
+        .ok_or_else(|| tera::Error::message("could not get parent"))?
         .to_string_lossy()
         .to_string();
 
-    Ok(tera::Value::String(parent))
+    Ok(parent)
 }
 
 pub static TERA: Lazy<Tera> = Lazy::new(|| {
     let mut tera = Tera::default();
+    tera.register_filter("to_yaml_array", to_yaml_array);
+    tera.register_filter("path_parent", path_parent);
     tera.add_raw_templates(vec![
         template!(".pre-commit-config.yaml.j2"),
         template!("LICENSE.j2"),
@@ -90,8 +82,6 @@ pub static TERA: Lazy<Tera> = Lazy::new(|| {
         template!("README.header.md.j2"),
     ])
     .expect("could not add raw templates");
-    tera.register_filter("to_yaml_array", to_yaml_array);
-    tera.register_filter("path_parent", path_parent);
     tera
 });
 
