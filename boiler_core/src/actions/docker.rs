@@ -21,7 +21,7 @@ impl Action for DockerCiAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::docker::{DockerCiAction, DOCKER_CI_FILENAME};
+    use crate::actions::docker::{DOCKER_CI_FILENAME, DockerCiAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

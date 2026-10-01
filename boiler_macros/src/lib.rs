@@ -1,7 +1,7 @@
+use proc_macro_crate::{FoundCrate, crate_name};
 use proc_macro2_diagnostics::SpanDiagnosticExt;
-use proc_macro_crate::{crate_name, FoundCrate};
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
+use syn::{DeriveInput, parse_macro_input};
 
 #[proc_macro_derive(FunctionMeta)]
 pub fn derive_function_meta(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

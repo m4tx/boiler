@@ -45,8 +45,8 @@ impl Detector for PythonDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::python::PythonDetector;
     use crate::detectors::Detector;
+    use crate::detectors::python::PythonDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

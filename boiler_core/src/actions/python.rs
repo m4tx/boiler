@@ -21,7 +21,7 @@ impl Action for PythonCiAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::python::{PythonCiAction, PYTHON_CI_FILENAME};
+    use crate::actions::python::{PYTHON_CI_FILENAME, PythonCiAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

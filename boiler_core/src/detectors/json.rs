@@ -18,8 +18,8 @@ impl Detector for JsonDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::json::JsonDetector;
     use crate::detectors::Detector;
+    use crate::detectors::json::JsonDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

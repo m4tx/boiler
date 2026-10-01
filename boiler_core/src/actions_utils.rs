@@ -48,11 +48,11 @@ pub fn write_file<T: Into<PathBuf>>(
 
     std::fs::create_dir_all(parent_dir)
         .map_err(|e| ActionIoError::new_create_dir(parent_dir, e))?;
-    if let Ok(old_content) = std::fs::read_to_string(&full_path) {
-        if old_content == content {
-            debug!("File {} unchanged", full_path.display());
-            return Ok(());
-        }
+    if let Ok(old_content) = std::fs::read_to_string(&full_path)
+        && old_content == content
+    {
+        debug!("File {} unchanged", full_path.display());
+        return Ok(());
     }
 
     debug!("Writing {} bytes to {}", content.len(), full_path.display());

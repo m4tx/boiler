@@ -5,7 +5,7 @@ use regex::Regex;
 
 use crate::actions::{Action, ActionData, ActionResult};
 use crate::actions_utils::write_file;
-use crate::template_renderer::{build_template_renderer_context, TERA};
+use crate::template_renderer::{TERA, build_template_renderer_context};
 
 /// Updated the README.md file header with badges.
 #[derive(Debug, FunctionMeta)]
@@ -50,7 +50,7 @@ impl Action for ReadmeAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::readme::{ReadmeAction, README_FILENAME};
+    use crate::actions::readme::{README_FILENAME, ReadmeAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

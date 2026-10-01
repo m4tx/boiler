@@ -91,9 +91,7 @@ impl<C: Clock + Send + Sync> GitDetector<C> {
         }
     }
 
-    fn get_commit_time(
-        commit: Result<Info, gix::revision::walk::iter::Error>,
-    ) -> anyhow::Result<DateTime<Utc>> {
+    fn get_commit_time(commit: gix::Result<Info>) -> anyhow::Result<DateTime<Utc>> {
         let commit = commit.with_context(|| "Could not get commit")?;
         let commit_time = commit.commit_time();
 
@@ -179,8 +177,8 @@ mod tests {
 
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::git::GitDetector;
     use crate::detectors::Detector;
+    use crate::detectors::git::GitDetector;
     use crate::test_utils::TempRepo;
     use crate::time::MockClock;
 
