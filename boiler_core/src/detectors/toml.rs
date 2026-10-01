@@ -18,8 +18,8 @@ impl Detector for TomlDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::toml::TomlDetector;
     use crate::detectors::Detector;
+    use crate::detectors::toml::TomlDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

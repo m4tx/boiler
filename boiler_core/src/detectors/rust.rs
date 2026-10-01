@@ -41,15 +41,15 @@ impl Detector for RustDetector {
                 if let Some(name) = &package.name {
                     data.insert(context_keys::CRATE_NAME, name);
                 }
-                if let Some(authors) = &package.authors {
-                    if let Some(author) = authors.first() {
-                        let full_name = author
-                            .find('<')
-                            .map(|index| &author[..index])
-                            .unwrap_or(author)
-                            .trim();
-                        data.insert(context_keys::FULL_NAME, full_name);
-                    }
+                if let Some(authors) = &package.authors
+                    && let Some(author) = authors.first()
+                {
+                    let full_name = author
+                        .find('<')
+                        .map(|index| &author[..index])
+                        .unwrap_or(author)
+                        .trim();
+                    data.insert(context_keys::FULL_NAME, full_name);
                 }
                 if let Some(rust_version) = &package.rust_version {
                     data.insert(context_keys::RUST_MSRV, rust_version);
@@ -99,8 +99,8 @@ impl RustDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::rust::RustDetector;
     use crate::detectors::Detector;
+    use crate::detectors::rust::RustDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

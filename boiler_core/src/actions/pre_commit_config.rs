@@ -18,7 +18,7 @@ impl Action for PreCommitConfigAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::pre_commit_config::{PreCommitConfigAction, PRE_COMMIT_CONFIG_FILENAME};
+    use crate::actions::pre_commit_config::{PRE_COMMIT_CONFIG_FILENAME, PreCommitConfigAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

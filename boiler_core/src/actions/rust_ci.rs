@@ -21,7 +21,7 @@ impl Action for RustCiAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::rust_ci::{RustCiAction, RUST_CI_FILENAME};
+    use crate::actions::rust_ci::{RUST_CI_FILENAME, RustCiAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

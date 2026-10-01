@@ -4,7 +4,7 @@ use once_cell::sync::Lazy;
 use tera::{Kwargs, State, Tera};
 
 use crate::actions::ActionData;
-use crate::actions_utils::{write_file, ActionIoError};
+use crate::actions_utils::{ActionIoError, write_file};
 use crate::context_keys::CONTEXT_ROOT;
 use crate::data::Value;
 

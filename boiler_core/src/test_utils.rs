@@ -1,8 +1,8 @@
 use std::fs;
 use std::path::Path;
 
-use assert_fs::fixture::{FileWriteStr, PathChild};
 use assert_fs::TempDir;
+use assert_fs::fixture::{FileWriteStr, PathChild};
 
 use crate::data::Repo;
 

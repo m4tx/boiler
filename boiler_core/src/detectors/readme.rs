@@ -36,8 +36,8 @@ impl Detector for ReadmeDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::readme::ReadmeDetector;
     use crate::detectors::Detector;
+    use crate::detectors::readme::ReadmeDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

@@ -24,7 +24,7 @@ impl Action for LicenseAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::license::{LicenseAction, LICENSE_FILENAME};
+    use crate::actions::license::{LICENSE_FILENAME, LicenseAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;
@@ -86,8 +86,9 @@ mod tests {
         LicenseAction.run(&action_data).unwrap();
 
         assert!(repo.file_not_empty(LICENSE_FILENAME));
-        assert!(repo
-            .read_str(LICENSE_FILENAME)
-            .starts_with("                    GNU GENERAL PUBLIC LICENSE"));
+        assert!(
+            repo.read_str(LICENSE_FILENAME)
+                .starts_with("                    GNU GENERAL PUBLIC LICENSE")
+        );
     }
 }

@@ -42,8 +42,8 @@ const SHELLSCRIPT_SHEBANGS: [&[u8]; 21] = [
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::shell_script::ShellScriptDetector;
     use crate::detectors::Detector;
+    use crate::detectors::shell_script::ShellScriptDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

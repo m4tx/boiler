@@ -21,7 +21,7 @@ impl Action for RustfmtTomlAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::rustfmt_toml::{RustfmtTomlAction, RUSTFMT_TOML_FILENAME};
+    use crate::actions::rustfmt_toml::{RUSTFMT_TOML_FILENAME, RustfmtTomlAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

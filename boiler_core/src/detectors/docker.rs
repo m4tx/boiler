@@ -69,8 +69,8 @@ impl Detector for DockerDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::docker::DockerDetector;
     use crate::detectors::Detector;
+    use crate::detectors::docker::DockerDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

@@ -18,7 +18,7 @@ impl Action for DependabotConfigAction {
 
 #[cfg(test)]
 mod tests {
-    use crate::actions::dependabot_config::{DependabotConfigAction, DEPENDABOT_CONFIG_FILENAME};
+    use crate::actions::dependabot_config::{DEPENDABOT_CONFIG_FILENAME, DependabotConfigAction};
     use crate::actions::{Action, ActionData};
     use crate::context_keys;
     use crate::data::Value;

@@ -27,10 +27,10 @@ impl ActionDataExt for ActionData {
 
 pub fn detect_by_extension(repo: &Repo, extensions: &[&str], lang: &str) -> DetectorResult {
     detect_by_predicate(repo, lang, |path| {
-        if let Some(ext) = path.extension() {
-            if extensions.contains(&ext.to_ascii_lowercase().to_string_lossy().as_ref()) {
-                return Ok(true);
-            }
+        if let Some(ext) = path.extension()
+            && extensions.contains(&ext.to_ascii_lowercase().to_string_lossy().as_ref())
+        {
+            return Ok(true);
         }
         Ok(false)
     })

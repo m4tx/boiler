@@ -31,8 +31,8 @@ impl Detector for JavascriptDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::javascript::JavascriptDetector;
     use crate::detectors::Detector;
+    use crate::detectors::javascript::JavascriptDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

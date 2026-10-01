@@ -67,8 +67,8 @@ impl LicenseDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::license::LicenseDetector;
     use crate::detectors::Detector;
+    use crate::detectors::license::LicenseDetector;
     use crate::test_utils::TempRepo;
 
     #[test]

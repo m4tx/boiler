@@ -18,8 +18,8 @@ impl Detector for YamlDetector {
 mod tests {
     use crate::context_keys;
     use crate::data::Value;
-    use crate::detectors::yaml::YamlDetector;
     use crate::detectors::Detector;
+    use crate::detectors::yaml::YamlDetector;
     use crate::test_utils::TempRepo;
 
     #[test]
