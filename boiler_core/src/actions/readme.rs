@@ -25,8 +25,8 @@ impl Action for ReadmeAction {
             String::new()
         };
 
-        // Match the top-level header, empty lines, and all the badges at the top of the
-        // README
+        // Match the top-level header, empty lines, and all the badges at the
+        // top of the README
         let header_regex = Regex::new(r"(?m)(?:^.+\n=+\n|^# .+\n|^\s*\n|^\[!.+\)\n)*").unwrap();
         if let Some(captures) = header_regex.captures(&readme) {
             let header_end = captures.get(0).unwrap().end();
